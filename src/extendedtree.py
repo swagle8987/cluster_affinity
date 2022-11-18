@@ -1,5 +1,5 @@
 from dendropy import Tree
-from .counter import Counter
+from counter import Counter
 
 class ExtendedTree(Tree):
 
@@ -65,3 +65,5 @@ class ExtendedTree(Tree):
             if not node.label:
                 node.label = get_annotation()
 
+    def __str__(self):
+        return self.convertTreeToString(schema="newick")

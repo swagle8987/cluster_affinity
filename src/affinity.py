@@ -5,7 +5,8 @@ def tree_affinity(tree1,tree2):
     """
     tree_affinity_cost = 0
     for node in tree1.postorder_node_iter():
-        ca_cost,outnodes = cluster_affinity(tree1.cluster_lookup[node.label],tree2)
+        intersection_lookup = {}
+        ca_cost,outnodes = cluster_affinity(tree1.cluster_lookup[node.label],tree2,intersection_lookup)
         tree_affinity_cost += ca_cost
         node.annotations.add_new("out_nodes"," || ".join([str(i) for  i in outnodes]))
         node.annotations.add_new("out_cost",ca_cost)
@@ -15,14 +16,17 @@ def tree_affinity(tree1,tree2):
             val = val + " || {}".format(node.label)
             outnode.annotations.drop(name="in_nodes")
             outnode.annotations.add_new("in_nodes",val)
+            val_num = outnode.annotations.get_value("in_nodes_support","0")
+            val = float(val_num) + (intersection_lookup[outnode.label]/len(tree2.get_cluster(outnode.label)))
+            outnode.annotations.drop(name="in_nodes_support")
+            outnode.annotations.add_new("in_nodes_support",round(val,2))
     return tree_affinity_cost
 
-def cluster_affinity(cluster,tree2):
+def cluster_affinity(cluster,tree2,intersection_lookup):
     """TODO: Docstring for cluster_affinity.
     :returns: TODO
 
     """
-    intersection_lookup= {}
     min_distance = 10000000000000000
     outnodes = []
     for node in tree2.postorder_node_iter():
