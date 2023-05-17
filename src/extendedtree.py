@@ -18,7 +18,6 @@ class ExtendedTree(Tree):
         newTree = Tree.get(**kwargs)
         newTree = ExtendedTree(newTree)
         return newTree
-
     
     def setFilePath(self,filepath):
        self.file_path = filepath
@@ -33,7 +32,7 @@ class ExtendedTree(Tree):
                 for child in node.child_node_iter():
                     cluster = cluster | self.cluster_lookup[child.label]
             if not node.label:
-                node.label = c.get_count()
+                node.label = str(c.get_count())
                 node.annotations.add_new("node_number",c.get_count())
                 c.count_up()
             self.cluster_lookup[node.label] = frozenset(cluster)
