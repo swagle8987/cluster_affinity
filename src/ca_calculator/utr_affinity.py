@@ -1,4 +1,4 @@
-from reportable import Reportable
+from .reportable import Reportable
 from pprint import pprint
 
 class UtrAffinityCalculator(Reportable):

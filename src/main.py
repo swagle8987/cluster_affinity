@@ -1,7 +1,5 @@
 import dendropy
-from utr_affinity import UtrAffinityCalculator
-from rtu_affinity import RtuAffinityCalculator
-from rooted_affinity import RootedAffinityCalculator
+from ca_calculator import UtrAffinityCalculator,RtuAffinityCalculator,RootedAffinityCalculator
 from extendedtree import ExtendedTree
 import argparse
 

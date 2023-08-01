@@ -1,5 +1,5 @@
 from dendropy import Tree
-from counter import Counter
+from .counter import Counter
 
 class ExtendedTree(Tree):
 
