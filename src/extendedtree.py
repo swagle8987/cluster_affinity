@@ -1,3 +1,4 @@
+import colorsys
 from dendropy import Tree
 from counter import Counter
 
@@ -21,6 +22,20 @@ class ExtendedTree(Tree):
     
     def setFilePath(self,filepath):
        self.file_path = filepath
+
+
+    def color_nodes(self,criteria):
+        nodes = self.find_nodes(criteria)
+        n = len(nodes)
+        hsv_colors = [(i / n, 0.7, 0.7) for i in range(n)]
+        rgb_colors = [colorsys.hsv_to_rgb(*hsv) for hsv in hsv_colors]
+        rgb_colors = [[round(255 * color[i]) for i in range(len(color))] for color in rgb_colors]
+        hex_colors = ['#%02x%02x%02x' % (color[0], color[1], color[2]) for color in rgb_colors]
+        for i,color in zip(nodes,hex_colors):
+            i.annotations.add_new("!color",color)
+
+
+
 
     def enrich_tree(self):
         c = Counter()
@@ -54,7 +69,7 @@ class ExtendedTree(Tree):
         return self.cluster_lookup[label]
         
     def writeTreeToFile(self,path,schema="newick"):
-        self.write(path=path,schema="newick",suppress_internal_node_labels=False,suppress_annotations=False,suppress_rooting=True)
+        self.write(path=path,schema=schema,suppress_internal_node_labels=False,suppress_annotations=False,suppress_rooting=True)
         
     def convertTreeToString(self,schema="newick"):
         return self.as_string(schema="newick",suppress_internal_node_labels=False,suppress_annotations=False,suppress_rooting=True)
