@@ -9,7 +9,7 @@ class RootedAffinityCalculator(Reportable):
     def __init__(self, *args, **kwargs):
         Reportable.__init__(self, *args, **kwargs)
 
-    def calc_affinity(self, tree1, tree2):
+    def calc_affinity(self, tree1, tree2, relative=False):
         """ Calculates the rooted affinity cost between two rooted trees
         @param tree1
         @param tree2
@@ -19,7 +19,7 @@ class RootedAffinityCalculator(Reportable):
         node_lookups = dict()
         for node in tree1.postorder_node_iter():
             intersection_lookup = {}
-            ca_cost, outnodes = self.cluster_affinity(tree1.cluster_lookup[node.label], tree2,intersection_lookup)
+            ca_cost, outnodes = self.cluster_affinity(tree1.cluster_lookup[node.label], tree2,intersection_lookup, relative)
             tree_affinity_cost += ca_cost
             node.annotations.add_new("maps_to", " || ".join([str(i.label) for i in outnodes]))
             node.annotations.add_new("relative_mapping_cost",ca_cost)
@@ -47,7 +47,7 @@ class RootedAffinityCalculator(Reportable):
         return tree_affinity_cost
 
 
-    def cluster_affinity(self, cluster, tree2, intersection_lookup):
+    def cluster_affinity(self, cluster, tree2, intersection_lookup, relative):
         """Calculates the rooted affinity cost between the cluster and a tree
         @param cluster
         @param tree
@@ -66,7 +66,7 @@ class RootedAffinityCalculator(Reportable):
                 for child in node.child_node_iter():
                     intersection_size += intersection_lookup[child.label]
             distance = len(cluster) + len(tree2.get_cluster(node.label)) - (2 * intersection_size)
-            relative_distance = distance/len(cluster)
+            relative_distance = distance/len(cluster) if relative else distance
             self.log_event("node_computation",
                            {"left_cluster": str(set(cluster)),
                             "right_cluster": str(set(tree2.get_cluster(node.label))),

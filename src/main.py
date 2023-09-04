@@ -27,7 +27,7 @@ def main(args):
         dist,edge = affinity_calculator.calc_affinity(t1,t2)
         t1.reroot_at_edge(edge)
     else:
-        dist = affinity_calculator.calc_affinity(t1,t2)
+        dist = affinity_calculator.calc_affinity(t1,t2,args.relative)
     print(dist)
     t1.writeTreeToFile(args.output_tree_1,schema=args.schema)
     t2.writeTreeToFile(args.output_tree_2,schema=args.schema)
@@ -50,6 +50,7 @@ if __name__=="__main__":
     parser.add_argument('--output_tree_2','-o2', help="The output file for the resultant tree 2, defaults to tree2_result.tre",default="tree2_result.tre")
     parser.add_argument("--stat","-s", help="The output file for distributions for each cluster, defaults to none", default="")
     parser.add_argument("--schema",help="The output file format",default="newick") 
+    parser.add_argument("--relative",help="The output file format",action="store_true") 
 
     args = parser.parse_args()
     main(args)
