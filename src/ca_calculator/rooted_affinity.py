@@ -1,4 +1,5 @@
 from .reportable import Reportable
+import pdb
 
 
 class RootedAffinityCalculator(Reportable):
@@ -66,6 +67,8 @@ class RootedAffinityCalculator(Reportable):
                 for child in node.child_node_iter():
                     intersection_size += intersection_lookup[child.label]
             distance = len(cluster) + len(tree2.get_cluster(node.label)) - (2 * intersection_size)
+            if distance<0:
+                pdb.set_trace()
             relative_distance = distance/len(cluster) if relative else distance
             self.log_event("node_computation",
                            {"left_cluster": str(set(cluster)),

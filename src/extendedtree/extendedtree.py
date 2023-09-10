@@ -1,6 +1,7 @@
 import colorsys
-from dendropy import Tree
+from dendropy import Tree,Node
 from .counter import Counter
+import warnings
 
 class ExtendedTree(Tree):
 
@@ -14,6 +15,14 @@ class ExtendedTree(Tree):
         self.node_lookup = {}
         self.file_path = ""
         self.enrich_tree()
+
+    def reset_tree(self):
+        self.clusters = {}
+        self.cluster_lookup  = {}
+        self.node_lookup = {}
+        for node in self.postorder_node_iter():
+            node.label = None
+
 
     def get(**kwargs):
         newTree = Tree.get(**kwargs)
@@ -34,7 +43,34 @@ class ExtendedTree(Tree):
         for i,color in zip(nodes,hex_colors):
             i.annotations.add_new("!color",color)
 
-
+    # SPR stuff
+    def spr(self,src_node,dest_node):
+        if src_node == dest_node:
+            raise ValueError("The source node is the dest_node")
+        if src_node.parent_node == None:
+            raise ValueError("The source node is the root node")
+  #      elif self.cluster_lookup[dest_node.label] < self.cluster_lookup[src_node.label]:
+  #          raise ValueError("The dest_node is a descendant of the src_node")
+        else:
+            if src_node.parent_node == dest_node:
+                warnings.warn("The destination node is the parent of the source node")
+            # If dest_node is full then add new node
+            if len(dest_node.child_nodes()) >= 2:
+                n = Node()
+                if dest_node.parent_node:
+                    p = dest_node.parent_node
+                    p.remove_child(dest_node)
+                    p.add_child(n)
+                else:
+                    self.seed_node = n
+                n.add_child(dest_node)
+                dest_node = n
+            l = src_node.parent_node
+            l.remove_child(src_node)
+            dest_node.add_child(src_node)
+            self.encode_bipartitions(True, False)
+            self.reset_tree()
+            self.enrich_tree()
 
 
     def enrich_tree(self):
@@ -74,10 +110,6 @@ class ExtendedTree(Tree):
     def convertTreeToString(self,schema="newick"):
         return self.as_string(schema="newick",suppress_internal_node_labels=False,suppress_annotations=False,suppress_rooting=True)
 
-    def label_tree(self):
-        for node in self.postorder_node_iter():
-            if not node.label:
-                node.label = get_annotation()
 
     def __str__(self):
         return self.convertTreeToString(schema="newick")
