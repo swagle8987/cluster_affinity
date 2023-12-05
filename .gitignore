@@ -4,3 +4,7 @@ cluster_affinity/**
 *.so
 __pycache__/
 .env
+dist/
+build/
+*.tre
+*.egg-info/

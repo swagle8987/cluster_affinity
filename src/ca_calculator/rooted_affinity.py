@@ -28,7 +28,7 @@ def cluster_affinity_matrix(tree1, tree2):
             if c.taxon.label == x.taxon.label:
                 h[c.label][x.label] = 0
             else:
-                h[c.label][x.label] = 2 
+                h[c.label][x.label] = 2
     for c in tree1.leaf_node_iter():
         for x in tree2.postorder_internal_node_iter():
             for xk in x.child_node_iter():
@@ -51,6 +51,16 @@ def cluster_affinity_matrix(tree1, tree2):
             for ck in c.child_node_iter():
                 h[c.label][x.label] += h[ck.label][x.label] - c2[x.label]
             h[c.label][x.label] += c2[x.label]
-    return h
+    return h,c1,c2
 
+
+if __name__=="__main__":
+    t1 = dendropy.Tree.get(path="1.tre",schema="newick")
+    t2 = dendropy.Tree.get(path="2.tre",schema="newick")
+    h = cluster_affinity_matrix(t1,t2)
+    print(h)
+    print(np.min(h,axis=0))
+    print(np.sum(np.min(h,axis=0)))
+    print(np.min(h,axis=1))
+    print(np.sum(np.min(h,axis=1)))
 
