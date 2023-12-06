@@ -1,3 +1,1 @@
 from .rooted_affinity import cluster_affinity_matrix
-from .rtu_affinity import RtuAffinityCalculator
-from .utr_affinity import UtrAffinityCalculator
