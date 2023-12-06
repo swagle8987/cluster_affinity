@@ -9,3 +9,4 @@ build/
 *.tre
 *.egg-info/
 *.csv
+.ipynb_checkpoints/
