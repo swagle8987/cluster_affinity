@@ -1,1 +1,1 @@
-from ca_calculator import cluster_affinity_matrix
+from .ca_calculator import cluster_affinity_matrix

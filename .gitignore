@@ -8,3 +8,4 @@ dist/
 build/
 *.tre
 *.egg-info/
+*.csv
