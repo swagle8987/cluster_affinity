@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0","dendropy","numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="cluster_affinity"
+version="0.0.3"
+authors = [
+	{name="Sanket Wagle", email="swagle@iastate.edu"}
+]
+description="A tool to calculate the cluster affinity distance between two trees"
+readme="README.md"
+
+[project.scripts]
+cluster_affinity = "main:main"
+

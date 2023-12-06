@@ -1,85 +1,70 @@
-from .reportable import Reportable
+import numpy as np
+import dendropy
 import pdb
 
 
-class RootedAffinityCalculator(Reportable):
-    """
-    Calculates the rooted cluster affinity cost
-    """
-
-    def __init__(self, *args, **kwargs):
-        Reportable.__init__(self, *args, **kwargs)
-
-    def calc_affinity(self, tree1, tree2, relative=False):
-        """ Calculates the rooted affinity cost between two rooted trees
-        @param tree1
-        @param tree2
-        :returns: affinity cost from tree1 to tree2
-        """
-        tree_affinity_cost = 0
-        node_lookups = dict()
-        for node in tree1.postorder_node_iter():
-            intersection_lookup = {}
-            ca_cost, outnodes = self.cluster_affinity(tree1.cluster_lookup[node.label], tree2,intersection_lookup, relative)
-            tree_affinity_cost += ca_cost
-            node.annotations.add_new("maps_to", " || ".join([str(i.label) for i in outnodes]))
-            node.annotations.add_new("relative_mapping_cost",ca_cost)
-            node_lookups[node] = set(outnodes)
-            for out in outnodes:
-                outnode = tree2.node_lookup[out.label]
-                val = outnode.annotations.get_value("mapped_by","")
-                val = val + " || {}".format(node.label)
-                outnode.annotations.drop(name="mapped_by")
-                outnode.annotations.add_new("mapped_by", val)
-                val_num = outnode.annotations.get_value("mapping_frequency","0")
-                val = int(val_num) + 1
-                outnode.annotations.drop(name="mapping_frequency")
-                outnode.annotations.add_new("mapping_frequency", val)
-        def is_node_antichain(n):
-            if n.parent_node == None:
-                return False
-            parent_nodes_antichains = {i.parent_node for i in node_lookups[n]}
-            if len(parent_nodes_antichains & node_lookups[n.parent_node]) > 0:
-                return False
+def cluster_affinity_matrix(tree1, tree2, mapping=lambda x:x):
+    n1 = len(tree1.leaf_nodes())
+    n2 = len(tree2.leaf_nodes())
+    c1 = np.full(len(tree1.nodes()),0)
+    c2 = np.full(len(tree2.nodes()),0)
+    h = np.full((len(c1),len(c2)),-1)
+    for i,v in enumerate(tree1.postorder_node_iter()):
+        v.label = i
+        if v.is_leaf():
+            c1[i] = 1
+        else:
+            for ck in v.child_node_iter():
+                c1[i] += c1[ck.label]
+    for i,v in enumerate(tree2.postorder_node_iter()):
+        v.label = i
+        if v.is_leaf():
+            c2[i] = 1
+        else:
+            for ck in v.child_node_iter():
+                c2[i] += c2[ck.label]
+    for c in tree1.leaf_node_iter():
+        for x in tree2.leaf_node_iter():
+            if mapping(c.taxon.label) == x.taxon.label:
+                h[c.label][x.label] = 1
             else:
-                return True
+                h[c.label][x.label] = 0
+    for c in tree1.leaf_node_iter():
+        for x in tree2.postorder_internal_node_iter():
+            h[c.label][x.label] = 0
+            for xk in x.child_node_iter():
+                if h[c.label][xk.label] > 0:
+                    h[c.label][x.label] = 1
+                    break
+           # h[c.label][x.label] += c2[x.label]
+    for c in tree1.postorder_internal_node_iter():
+        for x in tree2.leaf_node_iter():
+            for ck in c.child_node_iter():
+                h[c.label][x.label] = 0
+                if h[ck.label][x.label] > 0:
+                    h[c.label][x.label] = 1
+                    break
+           # h[c.label][x.label] += c1[c.label]
+    for c in tree1.postorder_internal_node_iter():
+        for x in tree2.postorder_internal_node_iter():
+            h[c.label][x.label] = 0
+            for ck in c.child_node_iter():
+                h[c.label][x.label] += h[ck.label][x.label] #- c2[x.label]
+            h[c.label][x.label] = min(h[c.label][x.label],c2[x.label])
+            #h[c.label][x.label] += c2[x.label]
+    h *= -2
+    h = c1.reshape(len(c1),1) + h
+    h = c2.reshape(1,len(c2)) + h
+    return h,c1,c2
 
-        tree1.color_nodes(is_node_antichain)
-        return tree_affinity_cost
 
+if __name__=="__main__":
+    t1 = dendropy.Tree.get(path="1.tre",schema="newick")
+    t2 = dendropy.Tree.get(path="2.tre",schema="newick")
+    h = cluster_affinity_matrix(t1,t2)
+    print(h)
+    print(np.min(h,axis=0))
+    print(np.sum(np.min(h,axis=0)))
+    print(np.min(h,axis=1))
+    print(np.sum(np.min(h,axis=1)))
 
-    def cluster_affinity(self, cluster, tree2, intersection_lookup, relative):
-        """Calculates the rooted affinity cost between the cluster and a tree
-        @param cluster
-        @param tree
-        :returns: affinity cost from tree1 to tree2
-        """
-        min_distance = 10000000000000000
-        outnodes = []
-        for node in tree2.postorder_node_iter():
-            intersection_size = 0
-            if node.is_leaf():
-                if str(node.taxon) in cluster:
-                    intersection_size = 1
-                else:
-                    intersection_size = 0
-            else:
-                for child in node.child_node_iter():
-                    intersection_size += intersection_lookup[child.label]
-            distance = len(cluster) + len(tree2.get_cluster(node.label)) - (2 * intersection_size)
-            if distance<0:
-                pdb.set_trace()
-            relative_distance = distance/len(cluster) if relative else distance
-            self.log_event("node_computation",
-                           {"left_cluster": str(set(cluster)),
-                            "right_cluster": str(set(tree2.get_cluster(node.label))),
-                            "distance": distance,
-                            "relative_distance":relative_distance,
-                            "intersection": intersection_size})
-            intersection_lookup[node.label] = intersection_size
-            if relative_distance< min_distance:
-                min_distance = relative_distance
-                outnodes = [node]
-            elif relative_distance== min_distance:
-                outnodes.append(node)
-        return min_distance, outnodes

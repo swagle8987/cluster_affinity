@@ -1,4 +1,1 @@
-from extendedtree import ExtendedTree
-from ca_calculator import RootedAffinityCalculator
-from ca_calculator import RtuAffinityCalculator
-from ca_calculator import UtrAffinityCalculator
+from .ca_calculator import cluster_affinity_matrix
