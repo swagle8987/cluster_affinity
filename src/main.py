@@ -26,8 +26,8 @@ def process_trees(args):
     Main function that initializes the trees and computes the tree affinity distance
     :arg: arguments from the system
     """
-    t1 = dendropy.Tree.get(path=args.tree_1,schema="newick")
-    t2 = dendropy.Tree.get(path=args.tree_2,schema="newick")
+    t1 = dendropy.Tree.get(path=args.tree_1,schema=args.in_schema)
+    t2 = dendropy.Tree.get(path=args.tree_2,schema=args.in_schema)
 
     mapping = lambda x:x
     if args.mapping_file:
@@ -65,11 +65,11 @@ def process_trees(args):
     if args.output_tree_1:
         for n in t1.nodes():
             n.edge.annotations.add_new("rel_cost",dt1_t2[n.label])
-        t1.write(path=args.output_tree_1,schema=args.schema,suppress_internal_node_labels=False,suppress_annotations=False)
+        t1.write(path=args.output_tree_1,schema=args.out_schema,suppress_internal_node_labels=False,suppress_annotations=False)
     if args.output_tree_2:
         for n in t2.nodes():
             n.edge.annotations.add_new("rel_cost",dt2_t1[n.label])
-        t2.write(path=args.output_tree_2,schema=args.schema,suppress_internal_node_labels=False,suppress_annotations=False)
+        t2.write(path=args.output_tree_2,schema=args.out_schema,suppress_internal_node_labels=False,suppress_annotations=False)
 
 def process_mapping_file(file_path):
     matching = {}
@@ -106,7 +106,8 @@ def main():
     parser.add_argument('--output_tree_1','-o1', metavar="o1",help="The output file for the resultant tree 1, defaults to tree1_result.tre",default="")
     parser.add_argument('--output_tree_2','-o2',metavar="o2", help="The output file for the resultant tree 2, defaults to tree2_result.tre",default="")
     parser.add_argument("--stat","-s", help="The output file for distributions for each cluster, defaults to none", default="")
-    parser.add_argument("--schema",help="The output file format",default="newick") 
+    parser.add_argument("--out_schema",help="The output file format",default="newick") 
+    parser.add_argument("--in_schema",help="The input file format",default="newick") 
     parser.add_argument("--normalize",help="If distance should be normalized",action="store_true") 
     parser.add_argument("--threshold",help="The threshold as a percentage of the cost above which a cluster is a core cluster", type=float,default=0)
     parser.add_argument("--min_cluster_size",help="The minimum cluster size for the threshold to count", type=float,default=0)
