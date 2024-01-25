@@ -5,11 +5,12 @@ import argparse
 import pandas as pd
 
 def get_tau(n,c):
-    l = c
-    l[l<n/2] -= 1
-    l[l>=n/2] *= -1
-    l[l<=-n/2] += n
-    return l
+    l = np.copy(c)
+    r = np.copy(c)
+    l -= 1
+    r += n
+    r -= 2*np.minimum(n,c)
+    return np.minimum(l,r)
 
 def save_matrix(distance_matrix,t1,t2,filepath):
     ar = np.dtype([('c1','object'),('c2','object'),('dist','float')])
@@ -21,6 +22,38 @@ def save_matrix(distance_matrix,t1,t2,filepath):
             d[idx][idx2] = (c_cluster,x_cluster,distance_matrix[c.label][x.label])
     np.savetxt(filepath,d.flatten(),fmt=['{%s}',"{%s}","%f"],delimiter="\t")
 
+
+def cluster_affinity_cost(t1,t2,normalize=False,mapping=lambda x:x):
+    distance_matrix,c1,c2  = cluster_affinity_matrix(t1,t2,mapping)
+    distance_matrix = distance_matrix.astype(float)
+    dt1_t2 = np.min(distance_matrix,axis=1).astype(float)
+    if normalize:
+        n1 = len(t1.leaf_nodes())
+        tau1 = get_tau(n1,c1)
+        ct1_t2 = np.sum(dt1_t2)/np.sum(tau1)
+    else:
+        ct1_t2 = np.sum(dt1_t2)
+    return ct1_t2
+
+
+def cluster_support_cost(t1,t2,normalize=False,mapping=lambda x:x):
+    distance_matrix,c1,c2  = cluster_affinity_matrix(t1,t2,mapping)
+    distance_matrix = distance_matrix.astype(float)
+    dt1_t2 = np.min(distance_matrix,axis=1).astype(float)
+    dt1_t2 /= c1
+    if normalize:
+        n1 = len(t1.leaf_nodes())
+        tau1 = get_tau(n1,c1)
+        c1 = c1.astype(float)
+        tau1 = tau1.astype(float)
+        tau1 /= c1
+        ct1_t2 = np.sum(dt1_t2)/np.sum(tau1)
+    else:
+        ct1_t2 = np.sum(dt1_t2)
+    return ct1_t2
+        
+    
+    
 def process_trees(args):
     """
     Main function that initializes the trees and computes the tree affinity distance
@@ -30,12 +63,16 @@ def process_trees(args):
     t2 = dendropy.Tree.get(path=args.tree_2,schema=args.in_schema)
 
     mapping = lambda x:x
+    if args.midpoint_rooting:
+        t1.reroot_at_midpoint()
     if args.mapping_file:
         mapping = process_mapping_file(args.mapping_file)
     distance_matrix,c1,c2  = cluster_affinity_matrix(t1,t2,mapping)
     distance_matrix = distance_matrix.astype(float)
     dt1_t2 = np.min(distance_matrix,axis=1).astype(float)
     dt2_t1 = np.min(distance_matrix,axis=0).astype(float)
+    altt1_t2 = np.max(distance_matrix,axis=1).astype(float)
+    altt2_t1 = np.max(distance_matrix,axis=0).astype(float)
     if args.normalize or args.threshold > 0.0:
         n1 = len(t1.leaf_nodes())
         n2 = len(t2.leaf_nodes())
@@ -77,6 +114,7 @@ def process_mapping_file(file_path):
         for line in file.readlines():
             l,r = [i.strip() for i in line.strip().split(":")]
             matching[l] = r
+    print(matching)
     return lambda x:matching[x] if x in matching else x
 
 
@@ -109,6 +147,7 @@ def main():
     parser.add_argument("--out_schema",help="The output file format",default="newick") 
     parser.add_argument("--in_schema",help="The input file format",default="newick") 
     parser.add_argument("--normalize",help="If distance should be normalized",action="store_true") 
+    parser.add_argument("--midpoint_rooting",help="If distance should be normalized",action="store_true") 
     parser.add_argument("--threshold",help="The threshold as a percentage of the cost above which a cluster is a core cluster", type=float,default=0)
     parser.add_argument("--min_cluster_size",help="The minimum cluster size for the threshold to count", type=float,default=0)
     parser.add_argument("--mapping_file",help="The mapping file to replace taxa in one tree with another")

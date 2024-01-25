@@ -1,8 +1,6 @@
-cluster_affinity
-cluster_affinity/**
 **/*.pyc
 *.so
-__pycache__/
+**/__pycache__/
 .env
 dist/
 build/
