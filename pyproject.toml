@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-dependencies = ["dendropy","numpy","pandas"]
+dependencies = ["dendropy","numpy","pytest"]
 name="cluster_affinity"
 version="0.0.4"
 authors = [
@@ -13,5 +13,5 @@ description="A tool to calculate the cluster affinity distance between two trees
 readme="README.md"
 
 [project.scripts]
-cluster_affinity = "main:main"
+cluster_affinity = "main:cluster_affinity_script"
 
