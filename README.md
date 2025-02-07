@@ -9,6 +9,14 @@ Cluster Affinity is available in PyPi and can be installed as pip install cluste
 ---
 Currently the CLI tool supports comparing two trees and outputting the cluster affinity cost. The CLI command for the same is
 ``
-cluster_affinity t1 t2
+cluster_affinity t1 t2 --filetype input_filetype
 ``
-where t1 and t2 are paths to newick representations of the trees.
+where t1 and t2 are paths to the trees.
+
+There is also a command to generate a matrix representation for the trees:
+
+``
+cluster_matrix t --filetype --outfile matrix.png
+``
+where t is the path to the treefile containing a list of input trees.
+
