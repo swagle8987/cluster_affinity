@@ -2,7 +2,7 @@ The Asymmetric Cluster Affinity cost is a phylogenetic cost based on calculating
 
 
 ### Installation
-Cluster Affinity is available in PyPi and can be installed as pip install cluster_affinity. Note that the package is built for Python 3.10 or higher. Cluster Affinity depends on dendropy, numpy and pytest. 
+Cluster Affinity is available in PyPi and can be installed as pip install cluster-affinity. Note that the package is built for Python 3.10 or higher. Cluster Affinity depends on dendropy, numpy and pytest. 
 
 
 ### Tutorial
