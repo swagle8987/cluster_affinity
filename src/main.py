@@ -1,6 +1,5 @@
 import argparse
 
-from cluster_computation import unrooted_cluster_affinity
 from cluster_computation import rooted_cluster_affinity,calculate_rooted_tau
 import dendropy
 
