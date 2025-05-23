@@ -10,7 +10,16 @@ def rooted_cluster_affinity(t1,t2):
     tree_dist = 0
     with alive_bar(len(t1_cmap), bar="bubbles", spinner="radioactive", file=stderr) as bar:
         for i in t1_cmap.values():
-            tree_dist += cluster_tree_dist(i,t2)
+            tree_dist += cluster_to_tree_affinity(i,t2)
+            bar()
+    return tree_dist
+
+def rooted_cluster_support(t1,t2):
+    t1_cmap = convert_tree_to_cmap(t1)
+    tree_dist = 0
+    with alive_bar(len(t1_cmap), bar="bubbles", spinner="radioactive", file=stderr) as bar:
+        for i in t1_cmap.values():
+            tree_dist += cluster_to_tree_affinity(i,t2)/len(i)
             bar()
     return tree_dist
 
@@ -56,9 +65,9 @@ def unrooted_cdist(c,t2,n):
     return min(mindist,n-maxdist)
 
 '''
-    cluster_tree_dist: Cluster -> Tree -> Int
+    cluster_to_tree_affinity: Cluster -> Tree -> Int
 '''
-def cluster_tree_dist(c,t2):
+def cluster_to_tree_affinity(c,t2):
     mindist = math.inf
     intersection_lookup = dict()
     size_lookup = dict()
@@ -110,6 +119,16 @@ def calculate_rooted_tau(t):
         tau += min(s-1,n-s)
     return tau
 
+def calculate_harmonic_number(i):
+    gamma = 0.57721566490153286060651209008240243
+    return gamma + math.log(i) + (1/(2*i)) + (1/(12*i**2)) + (1/(120*i**4))
+
+def calculate_rooted_phi(t):
+    n = len(t.leaf_nodes())
+    # Euler-Mascheroni constant
+    h_ceil = calculate_harmonic_number(math.ceil(n/2))
+    h_floor = calculate_harmonic_number(math.floor(n/2))
+    return n - h_ceil - h_floor
 
 def calculate_unrooted_tau(t):
     tau = 0
