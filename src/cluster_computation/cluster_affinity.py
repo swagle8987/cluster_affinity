@@ -1,6 +1,6 @@
 import math
-import heapq
-from alive_progress import alive_bar, alive_it
+from alive_progress import alive_bar
+from sys import stderr
 
 '''
     cluster_affinity: Tree -> Tree -> int
@@ -8,7 +8,7 @@ from alive_progress import alive_bar, alive_it
 def rooted_cluster_affinity(t1,t2):
     t1_cmap = convert_tree_to_cmap(t1)
     tree_dist = 0
-    with alive_bar(len(t1_cmap), bar="bubbles", spinner="radioactive") as bar:
+    with alive_bar(len(t1_cmap), bar="bubbles", spinner="radioactive", file=stderr) as bar:
         for i in t1_cmap.values():
             tree_dist += cluster_tree_dist(i,t2)
             bar()
