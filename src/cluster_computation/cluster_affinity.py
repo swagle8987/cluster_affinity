@@ -124,11 +124,19 @@ def calculate_harmonic_number(i):
     return gamma + math.log(i) + (1/(2*i)) + (1/(12*i**2)) + (1/(120*i**4))
 
 def calculate_rooted_phi(t):
+    phi = 0
     n = len(t.leaf_nodes())
-    # Euler-Mascheroni constant
-    h_ceil = calculate_harmonic_number(math.ceil(n/2))
-    h_floor = calculate_harmonic_number(math.floor(n/2))
-    return n - h_ceil - h_floor
+    sizemap = dict()
+    for i in t.postorder_node_iter():
+        if i.is_leaf():
+            s = 1
+        else:
+            s = 0
+            for ch in i.child_node_iter():
+                s += sizemap[ch]
+        sizemap[i] = s
+        phi += min(s-1,n-s)/s
+    return phi
 
 def calculate_unrooted_tau(t):
     tau = 0
