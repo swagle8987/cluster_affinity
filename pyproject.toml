@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 dependencies = ["dendropy","matplotlib","alive-progress"]
 name="cluster_affinity"
-version="0.0.8"
+version="0.0.9"
 authors = [
 	{name="Sanket Wagle", email="swagle@iastate.edu"}
 ]
