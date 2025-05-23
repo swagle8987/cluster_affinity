@@ -1,6 +1,6 @@
 import argparse
 
-from cluster_computation import rooted_cluster_affinity,calculate_rooted_tau
+from cluster_computation import rooted_cluster_affinity,calculate_rooted_tau,rooted_cluster_support,calculate_rooted_phi
 import dendropy
 
 from utils import peek_line,convert_dict_to_2d_array, make_matrix_image, check_input_trees
@@ -60,6 +60,33 @@ def cluster_affinity_script():
     dist = -1
     if check_input_trees([t1,t2]):
             dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
+    print(dist)
+
+def cluster_support_script():
+
+    parser = argparse.ArgumentParser(
+            prog='Cluster Support',
+            description='Calculates the Asymmetric Cluster Support cost from t1 to t2',
+    )
+
+    parser.add_argument('t1', help='The source tree from which the cost is to be calculated')
+    parser.add_argument('t2', help='The target tree to which is to be calculated')
+    parser.add_argument('-t','--filetype', help="The input file format")
+
+
+    args = parser.parse_args()
+
+    ftype = args.filetype
+    if not ftype:
+        ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
+
+    tns = dendropy.TaxonNamespace(label="taxa")
+    t1 = dendropy.Tree.get(path=args.t1,taxon_namespace=tns,schema=ftype,rooting="default-rooted")
+    t2 = dendropy.Tree.get(path=args.t2,taxon_namespace=tns,schema=ftype,rooting="default-rooted")
+
+    dist = -1
+    if check_input_trees([t1,t2]):
+            dist = rooted_cluster_support(t1,t2)/calculate_rooted_phi(t1)
     print(dist)
 
 

@@ -15,6 +15,7 @@ readme="README.md"
 [project.scripts]
 cluster_affinity = "main:cluster_affinity_script"
 cluster_matrix = "main:cluster_matrix_script"
+cluster_support = "main:cluster_support_script"
 
 [project.urls]
 Homepage = "https://github.com/swagle8987/cluster_affinity"
