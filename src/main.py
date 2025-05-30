@@ -2,7 +2,9 @@ import argparse
 
 from cluster_computation import rooted_cluster_affinity,calculate_rooted_tau,rooted_cluster_support,calculate_rooted_phi
 import dendropy
+from ete4 import Tree,nexus
 
+from ete4.smartview import CircleFace, TextFace,Layout,PropFace
 from utils import peek_line,convert_dict_to_2d_array, make_matrix_image, check_input_trees
 
 import os
@@ -45,6 +47,7 @@ def cluster_affinity_script():
     parser.add_argument('t1', help='The source tree from which the cost is to be calculated')
     parser.add_argument('t2', help='The target tree to which is to be calculated')
     parser.add_argument('-t','--filetype', help="The input file format")
+    parser.add_argument('--cli',help="Disables interactive browser", action='store_true')
 
 
     args = parser.parse_args()
@@ -52,14 +55,29 @@ def cluster_affinity_script():
     ftype = args.filetype
     if not ftype:
         ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
-
-    tns = dendropy.TaxonNamespace(label="taxa")
-    t1 = dendropy.Tree.get(path=args.t1,taxon_namespace=tns,schema=ftype,rooting="default-rooted")
-    t2 = dendropy.Tree.get(path=args.t2,taxon_namespace=tns,schema=ftype,rooting="default-rooted")
+    
+    if ftype=="newick":
+        t1 = Tree(open(args.t1))
+        t2 = Tree(open(args.t2))
+    else:
+        t1 = nexus.get_trees(open(args.t1).read())["tree_1"]
+        t2 = nexus.get_trees(open(args.t2).read())["tree_1"]
 
     dist = -1
     if check_input_trees([t1,t2]):
-            dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
+        dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
+        if not args.cli:
+            def draw_node(node):
+                yield PropFace("ca_dist",fs_min=11,position="right")
+                yield {
+                        "dot":{
+                            "radius":node.props["ca_dist"]*10
+                            }
+                        }
+            layout=Layout(name="Custom layout",draw_node=draw_node)
+            t1.explore(show_popup_props=["ca_dist"],layouts=[layout])
+            print("Press any key to stop the server and finish")
+            input()
     print(dist)
 
 def cluster_support_script():

@@ -36,10 +36,8 @@ def make_matrix_image(matrix,output_path,xlabels=[],ylabels=[],title=""):
     plt.savefig(output_path)
 
 def check_input_trees(tlist):
-    listtaxa = len(tlist[0].poll_taxa())
+    listtaxa = len(tlist[0])
     for i in tlist:
-        if listtaxa != len(i.poll_taxa()):
+        if listtaxa != len(i):
             raise RuntimeWarning("The input trees do not have the same taxa")
-        if not i.is_rooted:
-            NotImplementedError("Unrooted Trees cannot be handled right now")
     return True
