@@ -25,7 +25,7 @@
           export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib"
           test -d .nix-venv || ${pkgs.python3.interpreter} -m venv .nix-venv
           source .nix-venv/bin/activate
-          pip install dendropy matplotlib pandas
+          pip install dendropy matplotlib pandas ete4
           pip install --no-binary ":all:" numpy
         '';
     };

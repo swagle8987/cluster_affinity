@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-dependencies = ["dendropy","matplotlib","alive-progress"]
+dependencies = ["ete4","matplotlib","alive-progress"]
 name="cluster_affinity"
 version="0.0.9"
 authors = [
