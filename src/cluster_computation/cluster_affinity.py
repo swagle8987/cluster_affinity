@@ -1,6 +1,10 @@
 import math
-from alive_progress import alive_bar
+from alive_progress import alive_bar,config_handler
 from sys import stderr
+
+
+## config for progress bar
+config_handler.set_global(bar="bubbles",spinner="radioactive",file=stderr)
 
 '''
     cluster_affinity: Tree -> Tree -> int
@@ -8,7 +12,7 @@ from sys import stderr
 def rooted_cluster_affinity(t1,t2):
     t1_cmap = convert_tree_to_cmap(t1)
     tree_dist = 0
-    with alive_bar(len(t1_cmap), bar="bubbles", spinner="radioactive", file=stderr) as bar:
+    with alive_bar(len(t1_cmap)) as bar:
         for i in t1_cmap.values():
             tree_dist += cluster_to_tree_affinity(i,t2)
             bar()
@@ -17,7 +21,7 @@ def rooted_cluster_affinity(t1,t2):
 def rooted_cluster_support(t1,t2):
     t1_cmap = convert_tree_to_cmap(t1)
     tree_dist = 0
-    with alive_bar(len(t1_cmap), bar="bubbles", spinner="radioactive", file=stderr) as bar:
+    with alive_bar(len(t1_cmap)) as bar:
         for i in t1_cmap.values():
             tree_dist += cluster_to_tree_affinity(i,t2)/len(i)
             bar()
@@ -28,12 +32,14 @@ def unrooted_cluster_affinity(t1,t2):
     n = len(t1.leaf_nodes())
     tree_dist = 0
     flag = 0
-    for i in t1_cmap:
-        if i._parent_node != t1.seed_node:
-            tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
-        elif flag == 0:
-            tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
-            flag = 1
+    with alive_bar(len(t1_cmap)) as bar:
+        for i in t1_cmap:
+            if i._parent_node != t1.seed_node:
+                tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
+            elif flag == 0:
+                tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
+                flag = 1
+            bar()
     return tree_dist
 
 def unrooted_cdist(c,t2,n):
