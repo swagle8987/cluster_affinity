@@ -38,7 +38,7 @@ def unrooted_cluster_affinity(t1,t2):
     flag = 0
     with alive_bar(n) as bar:
         for i in t1.traverse("postorder"):
-            if not (i.parent and i.parent.is_root):
+            if i.parent and not i.parent.is_root:
                 tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
             elif flag == 0:
                 tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
@@ -135,7 +135,7 @@ def calculate_unrooted_tau(t):
             for ch in i.children:
                 s += sizemap[ch.id]
         sizemap[i.id] = s
-        if i.parent != t.root:
+        if i.parent and not i.parent.is_root:
             tau += min(s-1,n-s-1)
         elif flag == 0:
             tau += min(s-1,n-s-1)

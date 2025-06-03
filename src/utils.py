@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
-import dendropy
 
 def peek_line(path):
     with open(path,"r") as file:

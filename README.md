@@ -26,12 +26,3 @@ cluster_support t1 t2 --filetype input_filetype --cli
 ``
 
 where t1 and t2 are paths to the trees.
-
-There is also a command that generates a matrix showing the pairwise comparison between the trees using the cluster affinity cost.
-
-``
-cluster_matrix t --filetype --outfile matrix.png
-``
-
-where t is the path to the treefile containing a list of input trees.
-
