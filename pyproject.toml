@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-dependencies = ["dendropy","matplotlib","alive-progress"]
+dependencies = ["ete4","matplotlib","alive-progress"]
 name="cluster_affinity"
-version="0.0.9"
+version="0.1.0"
 authors = [
 	{name="Sanket Wagle", email="swagle@iastate.edu"}
 ]
@@ -20,3 +20,9 @@ cluster_support = "main:cluster_support_script"
 [project.urls]
 Homepage = "https://github.com/swagle8987/cluster_affinity"
 Issues = "https://github.com/swagle8987/cluster_affinity/issues"
+
+[tool.pytest.ini_options]
+markers = [
+    "fuzzy",
+    "prop",
+]
