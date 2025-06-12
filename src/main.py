@@ -1,15 +1,16 @@
 import argparse
 
-from cluster_computation import rooted_cluster_affinity,calculate_rooted_tau,rooted_cluster_support,calculate_rooted_phi
+from .cluster_computation import rooted_cluster_affinity,calculate_rooted_tau,rooted_cluster_support,calculate_rooted_phi
 from ete4 import Tree,nexus
 
 from ete4.smartview import CircleFace, TextFace,Layout,PropFace
-from utils import peek_line,convert_dict_to_2d_array, make_matrix_image, check_input_trees
+from .utils import peek_line,convert_dict_to_2d_array, make_matrix_image, check_input_trees
 
 import os
 
+
+
 def cluster_matrix_script():
-    return
     parser = argparse.ArgumentParser(
             prog='Cluster Matrix',
             description='Calculates the Asymmetric Cluster Affinity matrix for a list of trees',
