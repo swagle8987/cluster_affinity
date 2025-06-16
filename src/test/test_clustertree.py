@@ -1,7 +1,6 @@
 from ..cluster_computation import *
 from ete4 import Tree
 import math
-import numpy as np
 import pytest
 
 class TestClusterComputation:
