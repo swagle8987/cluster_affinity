@@ -47,7 +47,7 @@ class TestClusterComputation:
         dist = cluster_affinity.unrooted_cluster_affinity(self.t1,self.t2)
         assert dist == 1
 
-    @pytest.mark.fuzzy
+    @pytest.mark.slow
     def test_cluster_affinity_tau(self):
         ntax = 100
         labels = ["l{}".format(i) for i in range(ntax)]
@@ -64,7 +64,7 @@ class TestClusterComputation:
             assert dist <= math.ceil(ntax*ntax - 2*ntax)/4
             assert dist <= tau
 
-    @pytest.mark.fuzzy
+    @pytest.mark.slow
     def test_unrooted_cluster_affinity_tau(self):
         ntax = 100
         labels = ["l{}".format(i) for i in range(ntax)]
@@ -84,7 +84,7 @@ class TestClusterComputation:
                                                t2.write(), 
                                                cluster_affinity.rooted_cluster_affinity(t1,t2))
 
-    @pytest.mark.fuzzy
+    @pytest.mark.slow
     def test_cluster_support_phi(self):
         ntax = 100
         labels = ["l{}".format(i) for i in range(ntax)]
