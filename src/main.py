@@ -4,19 +4,21 @@ from cluster_computation import rooted_cluster_affinity,calculate_rooted_tau,roo
 from ete4 import Tree,nexus
 from ete4.smartview.explorer import add_tree,explore
 
-from ete4.smartview import CircleFace, TextFace,Layout,PropFace,BASIC_LAYOUT,HeatmapFace
+from ete4.smartview import CircleFace, TextFace,Layout,PropFace,BASIC_LAYOUT,HeatmapFace,LegendFace
 from utils import peek_line,convert_dict_to_2d_array, make_matrix_image, check_input_trees
 
 import matplotlib.cm as cm
-from matplotlib.colors import LinearSegmentedColormap,rgb2hex
+from matplotlib.colors import LinearSegmentedColormap,rgb2hex,to_rgb
 
 
 import os
 
 
-cmap = LinearSegmentedColormap.from_list("custom_tree_map",colors=["xkcd:chartreuse","xkcd:orange red"])
+COLOR_RANGE=[rgb2hex(to_rgb("xkcd:chartreuse")),rgb2hex(to_rgb("xkcd:orange red"))]
+cmap = LinearSegmentedColormap.from_list("custom_tree_map",colors=COLOR_RANGE)
 
 def draw_tree(tree):
+    yield LegendFace("Range of the cost:\n 0 indicates a perfect match while 1 indicates the maximum cost.\n The relative width of the edges is also an indicator of cost", "continuous",value_range=(0,1),color_range=COLOR_RANGE[::-1],position="aligned",anchor=(0,0))
     yield { 'node-height-min':0,
             'collapsed':{"shape":"outline"}}
 
@@ -24,7 +26,7 @@ def draw_node(node):
     if node.is_leaf:
         yield PropFace("name",fs_min=11,position="right")
     else:
-        yield PropFace("c_dist",fs_min=11,position="right")
+        yield PropFace("c_dist",fmt="%.3f",fs_min=11,position="right")
     color = rgb2hex(cmap(node.props["c_dist"])[:3])
     yield {
             "hz-line": {
