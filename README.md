@@ -1,4 +1,4 @@
-The Asymmetric Cluster Affinity cost is a phylogenetic cost quantifying the topological distance from a source tree to a target tree. It does so be finding the best possible match for each cluster in the source tree from all clusters in the target tree. 
+The Asymmetric Cluster Affinity cost is a phylogenetic cost quantifying the topological distance from a source tree to a target tree. It does so by finding the best possible match for each cluster in the source tree from all clusters in the target tree. 
 ![Example of Cluster Affinity cost matching clusters from source tree to target tree](./examples/ca_workings.png)
 
 If you use this software, please cite: Wagle, S., Markin, A., Górecki, P., Anderson, T. K., & Eulenstein, O. (2024). Asymmetric cluster-based measures for comparative phylogenetics. Journal of Computational Biology, 31(4), 312-327. doi:(https://doi.org/10.1089/cmb.2023.0338)
