@@ -47,7 +47,7 @@ def cluster_affinity_script():
     )
 
     parser.add_argument('t1', help='The source tree from which the cost is to be calculated')
-    parser.add_argument('t2', help='The target tree to which is to be calculated')
+    parser.add_argument('t2', help='The target tree to which the cost is to be calculated')
     parser.add_argument('-t','--filetype', help="The input file format")
     parser.add_argument('--cli',help="Disables interactive browser", action='store_true')
 
@@ -59,8 +59,8 @@ def cluster_affinity_script():
         ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
     
     if ftype=="newick":
-        t1 = Tree(open(args.t1))
-        t2 = Tree(open(args.t2))
+        t1 = Tree(open(args.t1),parser=1)
+        t2 = Tree(open(args.t2),parser=1)
     else:
         t1 = nexus.get_trees(open(args.t1).read())["tree_1"]
         t2 = nexus.get_trees(open(args.t2).read())["tree_1"]
@@ -84,7 +84,7 @@ def cluster_support_script():
     )
 
     parser.add_argument('t1', help='The source tree from which the cost is to be calculated')
-    parser.add_argument('t2', help='The target tree to which is to be calculated')
+    parser.add_argument('t2', help='The target tree to which the cost is to be calculated')
     parser.add_argument('-t','--filetype', help="The input file format")
     parser.add_argument('--cli',help="Disables interactive browser", action='store_true')
 
@@ -95,8 +95,8 @@ def cluster_support_script():
         ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
     
     if ftype=="newick":
-        t1 = Tree(open(args.t1))
-        t2 = Tree(open(args.t2))
+        t1 = Tree(open(args.t1),parser=1)
+        t2 = Tree(open(args.t2),parser=1)
     else:
         t1 = nexus.get_trees(open(args.t1).read())["tree_1"]
         t2 = nexus.get_trees(open(args.t2).read())["tree_1"]
