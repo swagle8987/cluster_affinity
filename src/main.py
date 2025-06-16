@@ -39,6 +39,37 @@ def draw_node(node):
                 }
             }
 
+def run_script(cost,args):
+
+    ftype = args.filetype
+    if not ftype:
+        ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
+    
+    if ftype=="newick":
+        t1 = Tree(open(args.t1),parser=1)
+        t2 = Tree(open(args.t2),parser=1)
+    else:
+        t1 = nexus.get_trees(open(args.t1).read())["tree_1"]
+        t2 = nexus.get_trees(open(args.t2).read())["tree_1"]
+
+    if check_input_trees([t1,t2]):
+        if cost=="cluster_affinity":
+            dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
+            name="Cluster Affinity Layout"
+        else:
+            dist = rooted_cluster_support(t1,t2)/calculate_rooted_phi(t1)
+            name="Cluster Support Layout"
+        if not args.cli:
+            layout=Layout(name=name,draw_tree=draw_tree,draw_node=draw_node)
+            add_tree(t1,name="Source tree",layouts=[layout])
+            explore(t2,name="Target tree",layouts=[BASIC_LAYOUT])
+            print("Press any key to stop the server and finish")
+            input()
+        else:
+            print(dist)
+
+
+
 def cluster_affinity_script():
 
     parser = argparse.ArgumentParser(
@@ -54,27 +85,8 @@ def cluster_affinity_script():
 
     args = parser.parse_args()
 
-    ftype = args.filetype
-    if not ftype:
-        ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
-    
-    if ftype=="newick":
-        t1 = Tree(open(args.t1),parser=1)
-        t2 = Tree(open(args.t2),parser=1)
-    else:
-        t1 = nexus.get_trees(open(args.t1).read())["tree_1"]
-        t2 = nexus.get_trees(open(args.t2).read())["tree_1"]
+    run_script("cluster_affinity",args)
 
-    dist = -1
-    if check_input_trees([t1,t2]):
-        dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
-        if not args.cli:
-            layout=Layout(name="Cluster Affinity Layout",draw_tree=draw_tree,draw_node=draw_node)
-            add_tree(t1,name="Source tree",layouts=[layout])
-            explore(t2,name="Target tree",layouts=[BASIC_LAYOUT])
-            print("Press any key to stop the server and finish")
-            input()
-    print(dist)
 
 def cluster_support_script():
 
@@ -90,27 +102,7 @@ def cluster_support_script():
 
     args = parser.parse_args()
 
-    ftype = args.filetype
-    if not ftype:
-        ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
-    
-    if ftype=="newick":
-        t1 = Tree(open(args.t1),parser=1)
-        t2 = Tree(open(args.t2),parser=1)
-    else:
-        t1 = nexus.get_trees(open(args.t1).read())["tree_1"]
-        t2 = nexus.get_trees(open(args.t2).read())["tree_1"]
-
-    dist = -1
-    if check_input_trees([t1,t2]):
-        dist = rooted_cluster_support(t1,t2)/calculate_rooted_phi(t1)
-        if not args.cli:
-            layout=Layout(name="Custom layout",draw_node=draw_node)
-            t1.explore(layouts=[layout])
-            print("Press any key to stop the server and finish")
-            input()
-    print(dist)
-
+    run_script("cluster_affinity",args)
 
 if __name__=="__main__":
     cluster_affinity_script()
