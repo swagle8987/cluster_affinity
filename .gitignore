@@ -4,7 +4,6 @@
 .env
 dist/
 build/
-*.tre
 *.egg-info/
 *.csv
 .ipynb_checkpoints/

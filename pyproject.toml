@@ -23,6 +23,6 @@ Issues = "https://github.com/swagle8987/cluster_affinity/issues"
 
 [tool.pytest.ini_options]
 markers = [
-    "fuzzy",
+    "slow",
     "prop",
 ]

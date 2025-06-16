@@ -15,7 +15,7 @@ def rooted_cluster_affinity(t1,t2):
     with alive_bar(len(t1_cmap)) as bar:
         for i in t1.traverse("postorder"):
             dist = rooted_cdist(t1_cmap[i],t2)
-            i.add_prop("ca_dist",dist/max(1,min(len(t1_cmap[i])-1,len(t1)-len(t1_cmap[i]))))
+            i.add_prop("c_dist",dist/max(1,min(len(t1_cmap[i])-1,len(t1)-len(t1_cmap[i]))))
             tree_dist += dist
             bar()
     return tree_dist
@@ -26,7 +26,7 @@ def rooted_cluster_support(t1,t2):
     with alive_bar(len(t1_cmap)) as bar:
         for i in t1.traverse("postorder"):
             dist = rooted_cdist(t1_cmap[i],t2)/len(t1_cmap[i])
-            i.add_prop("cs_dist",dist)
+            i.add_prop("c_dist",dist)
             tree_dist += dist
             bar()
     return tree_dist
