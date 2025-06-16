@@ -30,7 +30,9 @@ cluster_support t1.tre t2.tre
 computes the cluster support cost from t1 to t2 and opens up an interactive browser session for the same. 
 
 If the command is used as part of a automation script, the cli flag can be used instead to prevent the interactive session from running.
+
 ``
 cluster_affinity t1.tre t2.tre --cli
 ``
+
 Further options can be accessed using ``cluster_affinity -h`` 
