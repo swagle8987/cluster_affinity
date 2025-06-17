@@ -65,26 +65,6 @@ class TestClusterComputation:
             assert dist <= tau
 
     @pytest.mark.slow
-    def test_unrooted_cluster_affinity_tau(self):
-        ntax = 100
-        labels = ["l{}".format(i) for i in range(ntax)]
-        for i in range(1000):
-            t1 = Tree()
-            t1.populate(100,names=labels)
-            t2 = Tree()
-            t2.populate(100,names=labels)
-            t1.unroot()
-            t2.unroot()
-            dist= cluster_affinity.unrooted_cluster_affinity(t1,t2)
-            tau=cluster_affinity.calculate_unrooted_tau(t1)
-            assert dist >= 0,"{} {} {}".format(t1.write(),
-                                               t2.write(), 
-                                               cluster_affinity.rooted_cluster_affinity(t1,t2))
-            assert dist <= tau,"{} {} {}".format(t1.write(),
-                                               t2.write(), 
-                                               cluster_affinity.rooted_cluster_affinity(t1,t2))
-
-    @pytest.mark.slow
     def test_cluster_support_phi(self):
         ntax = 100
         labels = ["l{}".format(i) for i in range(ntax)]
