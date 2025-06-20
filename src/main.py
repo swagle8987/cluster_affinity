@@ -39,18 +39,20 @@ def draw_node(node):
                 }
             }
 
-def run_script(cost,args):
+def get_tree(path,ftype):
+    if ftype=="newick":
+        return Tree(open(path),parser=1)
+    elif ftype=="nexus":
+        return nexus.get_trees(open(path).read())["tree_1"]
+    else:
+        raise RuntimeError("Incorrect input file format for {}".format(path))
 
+def run_script(cost,args):
     ftype = args.filetype
     if not ftype:
         ftype = "nexus" if peek_line(args.t1) == "#NEXUS" else "newick"
-    
-    if ftype=="newick":
-        t1 = Tree(open(args.t1),parser=1)
-        t2 = Tree(open(args.t2),parser=1)
-    else:
-        t1 = nexus.get_trees(open(args.t1).read())["tree_1"]
-        t2 = nexus.get_trees(open(args.t2).read())["tree_1"]
+    t1 = get_tree(args.t1,ftype)
+    t2 = get_tree(args.t2,ftype)
 
     if check_input_trees([t1,t2]):
         if cost=="cluster_affinity":
