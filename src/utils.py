@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-def peek_line(path):
+def peek_line(path:'str')->'str':
     with open(path,"r") as file:
         pos=file.tell()
         line = file.readline()
