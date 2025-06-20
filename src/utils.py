@@ -34,9 +34,10 @@ def make_matrix_image(matrix,output_path,xlabels=[],ylabels=[],title=""):
     fig.tight_layout()
     plt.savefig(output_path)
 
-def check_input_trees(tlist):
-    listtaxa = len(tlist[0])
+def check_input_trees(tlist:list['ete4.Tree'])->bool:
+    listtaxa = set(tlist[0].leaf_names())
     for i in tlist:
-        if listtaxa != len(i):
-            raise RuntimeWarning("The input trees do not have the same taxa")
+        for l in i.leaf_names():
+            if l not in listtaxa:
+                raise RuntimeError("The input trees do not have the same taxa")
     return True
