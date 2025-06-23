@@ -71,6 +71,50 @@ def run_script(cost,args):
             print(dist)
 
 
+def cluster_matrix():
+    parser = argparse.ArgumentParser(
+            prog='Cluster Matrix',
+            description='Computes the cluster matrix for pairwise costs',
+    )
+    parser.add_argument('t',help='The treefile containing the multiple trees')
+    parser.add_argument('outfile',help='The output image path')
+    parser.add_argument('--title',help='The title for the matrix')
+    parser.add_argument('--cost',help='The cost to use for the pairwise comparison')
+    parser.add_argument('--filetype',help='The input filetype')
+
+    args = parser.parse_args()
+    ftype = args.filetype
+    if not ftype:
+        ftype = "nexus" if peek_line(args.t) == "#NEXUS" else "newick"
+
+    if ftype=="newick":
+        with open(args.t) as treefile:
+            trees = dict()
+            for ind,t in enumerate(treefile.read().strip().split("\n")):
+                print(ind)
+                trees["tree_{}".format(ind+1)] = Tree(t.strip(),parser=1)
+    elif ftype=="nexus":
+        trees = nexus.loads(open(args.t).read())
+    else:
+        raise RuntimeWarning("Unsupported file format")
+
+    matrix = []
+    for i in trees:
+        row = []
+        if args.cost == "cluster_affinity":
+            cluster_tau = calculate_rooted_tau(trees[i])
+        else:
+            cluster_phi = calculate_rooted_phi(trees[i])
+        for j in trees:
+            if args.cost == "cluster_affinity":
+                row.append(rooted_cluster_affinity(trees[i],trees[j])/cluster_tau)
+            else:
+                row.append(rooted_cluster_support(trees[i],trees[j])/cluster_phi)
+        matrix.append(row)
+    make_matrix_image(matrix,args.outfile)
+
+    
+
 
 def cluster_affinity_script():
 
