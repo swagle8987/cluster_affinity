@@ -67,8 +67,8 @@ def run_script(cost,args):
             name="Cluster Support Layout"
         if not args.cli:
             layout=generate_layout(name,args.color_only)
-            add_tree(t1,name="Source tree",layouts=[layout])
-            explore(t2,name="Target tree",layouts=[BASIC_LAYOUT])
+            add_tree(t1,name="Source tree ({})".format(os.path.basename(args.t1)),layouts=[layout])
+            explore(t2,name="Target tree ({})".format(os.path.basename(args.t2)),layouts=[BASIC_LAYOUT])
             print("Press any key to stop the server and finish")
             input()
         else:
