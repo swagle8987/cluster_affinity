@@ -2,15 +2,15 @@ import math
 from alive_progress import alive_bar,config_handler
 from sys import stderr
 from typing import TypeAlias
+import ete4
 
 
 cluster:TypeAlias = set[str]
 
-
 ## config for progress bar
 config_handler.set_global(bar="bubbles",spinner="radioactive",file=stderr)
 
-def rooted_cluster_affinity(t1:'ete4.Tree',t2:'ete4.Tree') -> float:
+def rooted_cluster_affinity(t1:ete4.Tree,t2:ete4.Tree) -> float:
     t1_cmap = t1.get_cached_content(prop="name")
     tree_dist = 0
     with alive_bar(len(t1_cmap)) as bar:
@@ -21,7 +21,7 @@ def rooted_cluster_affinity(t1:'ete4.Tree',t2:'ete4.Tree') -> float:
             bar()
     return tree_dist
 
-def rooted_cluster_support(t1:'ete4.Tree',t2:'ete4.Tree') -> float:
+def rooted_cluster_support(t1:ete4.Tree,t2:ete4.Tree) -> float:
     t1_cmap = t1.get_cached_content(prop="name")
     tree_dist = 0
     with alive_bar(len(t1_cmap)) as bar:
@@ -73,7 +73,7 @@ def unrooted_cdist(c,t2,n):
 '''
     rooted_cdist: Cluster -> Tree -> Int
 '''
-def rooted_cdist(c:cluster,t2:'ete4.Tree')-> int:
+def rooted_cdist(c:cluster,t2:ete4.Tree)-> int:
     mindist = math.inf
     intersection_lookup = dict()
     t2lookup = t2.get_cached_content(prop="name")
@@ -93,7 +93,7 @@ def rooted_cdist(c:cluster,t2:'ete4.Tree')-> int:
             mindist=newdist
     return mindist
 
-def calculate_rooted_tau(t:'ete4.Tree')->int:
+def calculate_rooted_tau(t:ete4.Tree)->int:
     tau = 0
     n = len(t)
     sizemap = dict()
@@ -108,7 +108,7 @@ def calculate_rooted_tau(t:'ete4.Tree')->int:
         tau += min(s-1,n-s)
     return tau 
 
-def calculate_rooted_phi(t:'ete4.Tree')->float:
+def calculate_rooted_phi(t:ete4.Tree)->float:
     phi = 0
     n = len(t)
     sizemap = dict()
