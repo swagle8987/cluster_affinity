@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
+import ete4
 
 def peek_line(path:'str')->'str':
     with open(path,"r") as file:
@@ -34,7 +35,7 @@ def make_matrix_image(matrix,output_path,xlabels=[],ylabels=[],title=""):
     fig.tight_layout()
     plt.savefig(output_path)
 
-def check_input_trees(tlist:list['ete4.Tree'])->bool:
+def check_input_trees(tlist:list[ete4.Tree])->bool:
     listtaxa = set(tlist[0].leaf_names())
     for i in tlist:
         for l in i.leaf_names():
