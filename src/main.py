@@ -101,17 +101,17 @@ def cluster_matrix():
     matrix = []
     for i in trees:
         row = []
-        if args.cost == "cluster_affinity":
-            cluster_tau = calculate_rooted_tau(trees[i])
-        else:
+        if args.cost == "cluster_support":
             cluster_phi = calculate_rooted_phi(trees[i])
+        else:
+            cluster_tau = calculate_rooted_tau(trees[i])
         for j in trees:
-            if args.cost == "cluster_affinity":
-                row.append(rooted_cluster_affinity(trees[i],trees[j])/cluster_tau)
-            else:
+            if args.cost == "cluster_support":
                 row.append(rooted_cluster_support(trees[i],trees[j])/cluster_phi)
+            else:
+                row.append(rooted_cluster_affinity(trees[i],trees[j])/cluster_tau)
         matrix.append(row)
-    make_matrix_image(matrix,args.outfile)
+    make_matrix_image(matrix,args.outfile,xlabels=trees.keys(),ylabels=trees.keys(),cmap=cmap)
 
     
 
