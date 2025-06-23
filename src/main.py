@@ -43,7 +43,7 @@ def get_tree(path,ftype):
     if ftype=="newick":
         return Tree(open(path),parser=1)
     elif ftype=="nexus":
-        return nexus.get_trees(open(path).read())["tree_1"]
+        return list(nexus.loads(open(path).read()).values())[0]
     else:
         raise RuntimeError("Incorrect input file format for {}".format(path))
 
