@@ -43,7 +43,7 @@ computes the cluster affinity cost between each pair of trees in t.tre and saves
 
 ![Example of matrix. Green boxes are low cost and red boxes are high cost](./examples/example_matrix.png)
 
-The green boxes in the matrix image are low cost pairings while hte red boxes are high cost pairings. The x axis represents the target trees i.e. the trees being mapped to and the y axis represents the source i.e. the trees being mapped from. As usual, each cost is normalized by the maximum possible value from the source tree. 
+The green boxes in the  image are low cost pairings while the red boxes are high cost pairings. The x axis represents the target trees i.e. the trees being mapped to and the y axis represents the source i.e. the trees being mapped from. As usual, each cost is normalized by the maximum possible value from the source tree. 
 
 The following command generates the matrix with the cluster support cost instead
 ``
@@ -51,4 +51,3 @@ The following command generates the matrix with the cluster support cost instead
 ``
 
 Further options can be accessed using ``cluster_affinity -h`` 
- wv
