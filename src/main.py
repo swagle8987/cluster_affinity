@@ -150,11 +150,11 @@ def cluster_support_script():
     parser.add_argument('t2', help='The target tree to which the cost is to be calculated')
     parser.add_argument('-t','--filetype', help="The input file format")
     parser.add_argument('--cli',help="Disables interactive browser", action='store_true')
-    parser.add_argument('--color_only',help="Disables node annotations(useful when visualizing dense trees)",action='store_false')
+    parser.add_argument('--color_only',help="Disables node annotations(useful when visualizing dense trees)",action='store_true')
 
     args = parser.parse_args()
 
-    run_script("cluster_affinity",args)
+    run_script("cluster_support",args)
 
 if __name__=="__main__":
     cluster_affinity_script()
