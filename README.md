@@ -35,4 +35,20 @@ If the command is used as part of a automation script, the cli flag can be used 
 cluster_affinity t1.tre t2.tre --cli
 ``
 
+Furthermore, we also provide a ``cluster_matrix`` command to automatically generate matrix visualizations based on the cluster affinity cost. For example:
+``
+cluster_matrix t.tre matrix.png
+``
+computes the cluster affinity cost between each pair of trees in t.tre and saves the matrix to out.png. An example matrix computed by the trees [multiple_trees_example.tre](./examples/multiple_trees_example) is given below
+
+![Example of matrix. Green boxes are low cost and red boxes are high cost](./examples/example_matrix.png)
+
+The green boxes in the matrix image are low cost pairings while hte red boxes are high cost pairings. The x axis represents the target trees i.e. the trees being mapped to and the y axis represents the source i.e. the trees being mapped from. As usual, each cost is normalized by the maximum possible value from the source tree. 
+
+The following command generates the matrix with the cluster support cost instead
+``
+    cluster_matrix t.tre matrix.png --cost cluster_support
+``
+
 Further options can be accessed using ``cluster_affinity -h`` 
+ wv
