@@ -14,26 +14,26 @@
     {
     devShell = pkgs.mkShell {
       buildInputs = with pkgs; [
-          python310
-          python310Packages.pip
-          python310Packages.virtualenv
-          python310Packages.build
-          python310Packages.twine
+          python3
+          python3Packages.pip
+          python3Packages.virtualenv
+          python3Packages.build
+          python3Packages.twine
           stdenv.cc.cc.lib
       ];
       shellHook = ''
           export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib"
           test -d .nix-venv || ${pkgs.python3.interpreter} -m venv .nix-venv
           source .nix-venv/bin/activate
-          pip install dendropy matplotlib pandas ete4
+          pip install matplotlib pandas ete4
           pip install --no-binary ":all:" numpy
         '';
     };
     explorationShell = pkgs.mkShell{
         buildInputs = with pkgs; [
-            python310
-            python310Packages.pip
-            python310Packages.virtualenv
+            python3
+            python3Packages.pip
+            python3Packages.virtualenv
             jupyter-all
             cmake
       ];
