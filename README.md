@@ -37,7 +37,7 @@ cluster_affinity t1.tre t2.tre --cli
 
 Furthermore, we also provide a ``cluster_matrix`` command to automatically generate matrix visualizations based on the cluster affinity cost. For example:
 ``
-cluster_matrix t.tre matrix.png
+cluster_matrix --average t.tre matrix.png
 ``
 computes the cluster affinity cost between each pair of trees in t.tre and saves the matrix to out.png. An example matrix computed by the trees [multiple_trees_example.tre](./examples/multiple_trees_example) is given below
 

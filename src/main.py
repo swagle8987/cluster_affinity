@@ -85,6 +85,7 @@ def cluster_matrix():
     parser.add_argument('--title',help='The title for the matrix')
     parser.add_argument('--cost',help='The cost to use for the pairwise comparison')
     parser.add_argument('--filetype',help='The input filetype')
+    parser.add_argument('--average',help="Adds a column displaying average cost to the matrix",action="store_true")
 
     args = parser.parse_args()
     ftype = args.filetype
@@ -114,8 +115,14 @@ def cluster_matrix():
                 row.append(rooted_cluster_support(trees[i],trees[j])/cluster_phi)
             else:
                 row.append(rooted_cluster_affinity(trees[i],trees[j])/cluster_tau)
+        if args.average:
+            row.append(sum(row)/len(row))
         matrix.append(row)
-    make_matrix_image(matrix,args.outfile,xlabels=trees.keys(),ylabels=trees.keys(),cmap=cmap)
+    if args.average:
+        xlabels = list(trees.keys()) + ["average"]
+    else:
+        xlabels=list(trees.keys())
+    make_matrix_image(matrix,args.outfile,xlabels=xlabels,ylabels=trees.keys(),cmap=cmap)
 
     
 
