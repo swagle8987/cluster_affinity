@@ -21,7 +21,7 @@ cluster_affinity examples/t1.tre examples/t2.tre
 
 The command also opens up an interactive web session (by default at localhost:5000) to visualize the source and target trees. The source tree has node labels representing the cluster affinity cost for that node (normalized to 0-1 as well), with branches colored by the cluster affinity cost as well. An example of source tree visualization is given below:
 
-![Example of labelled source tree. Red edges are high cost while green edges are low cost](./examples/example_tree_labeling.png)
+![Example of labelled source tree. Red edges are high cost while green edges are low cost](./examples/example_tree_labeling.jpg)
 
 To compute the cluster support cost instead, ``cluster_affinity`` can be replaced with ``cluster_support`` in all commands. For example:
 ``
@@ -43,7 +43,7 @@ computes the cluster affinity cost between each pair of trees in t.tre and saves
 
 ![Example of matrix. Green boxes are low cost and red boxes are high cost](./examples/example_matrix.png)
 
-The dark green boxes in the matrix image are low cost pairings while the red boxes are high cost pairings. The x axis represents the target trees i.e. the trees being mapped to and the y axis represents the source i.e. the trees being mapped from. As usual, each cost is normalized by the maximum possible value from the source tree. The ``--average` flag also adds an extra column summarizing the average distance from the source tree to other trees in the matrix. 
+The dark green boxes in the matrix image are low cost pairings while the red boxes are high cost pairings. The x axis represents the target trees i.e. the trees being mapped to and the y axis represents the source i.e. the trees being mapped from. As usual, each cost is normalized by the maximum possible value from the source tree. The ``--average`` flag also adds an extra column summarizing the average distance from the source tree to other trees in the matrix. 
 
 The following command generates the matrix with the cluster support cost instead
 ``
