@@ -14,7 +14,7 @@ from matplotlib.colors import LinearSegmentedColormap,rgb2hex,to_rgb
 import os
 
 
-COLOR_RANGE=[rgb2hex(to_rgb("xkcd:chartreuse")),rgb2hex(to_rgb("xkcd:orange red"))]
+COLOR_RANGE=[rgb2hex(to_rgb("xkcd:evergreen")),rgb2hex("#ffad01"),rgb2hex("#ff0000")]
 cmap = LinearSegmentedColormap.from_list("custom_tree_map",colors=COLOR_RANGE)
 
 def generate_layout(name,color_only):
