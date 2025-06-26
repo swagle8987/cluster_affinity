@@ -25,7 +25,7 @@ def make_matrix_image(matrix,output_path,xlabels=[],ylabels=[],title="",cmap=Non
     if not ylabels:
         ylabels = range(len(matrix[0]))
     fig,ax = plt.subplots()
-    im = ax.imshow(matrix,cmap)
+    im = ax.imshow(matrix,cmap,vmin=0,vmax=1)
     ax.set_xlabel("Target tree")
     ax.set_ylabel("Source tree")
     ax.set_xticks(range(len(xlabels)),labels=xlabels)
