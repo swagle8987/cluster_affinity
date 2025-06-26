@@ -21,7 +21,7 @@ cluster_affinity examples/t1.tre examples/t2.tre
 
 The command also opens up an interactive web session (by default at localhost:5000) to visualize the source and target trees. The source tree has node labels representing the cluster affinity cost for that node (normalized to 0-1 as well), with branches colored by the cluster affinity cost as well. An example of source tree visualization is given below:
 
-![Example of labelled source tree. Red edges are high cost while green edges are low cost](./examples/example_tree_labeling.png)
+![Example of labelled source tree. Red edges are high cost while green edges are low cost](./examples/example_tree_labeling.jpg)
 
 To compute the cluster support cost instead, ``cluster_affinity`` can be replaced with ``cluster_support`` in all commands. For example:
 ``
