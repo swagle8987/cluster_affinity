@@ -7,3 +7,12 @@ build/
 *.egg-info/
 *.csv
 .ipynb_checkpoints/
+*.py[cod]
+htmlcov
+.DS_Store
+.idea
+*.log
+tmp/
+**/.test-venv
+
+test/**/*.tre

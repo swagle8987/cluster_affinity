@@ -1,38 +1,44 @@
 import math
-from alive_progress import alive_bar,config_handler
+from alive_progress import alive_bar, config_handler
 from sys import stderr
 from typing import TypeAlias
 import ete4
 
 
-cluster:TypeAlias = set[str]
+cluster: TypeAlias = set[str]
 
 ## config for progress bar
-config_handler.set_global(bar="bubbles",spinner="radioactive",file=stderr)
+config_handler.set_global(bar="bubbles", spinner="radioactive", file=stderr)
 
-def rooted_cluster_affinity(t1:ete4.Tree,t2:ete4.Tree) -> float:
+
+def rooted_cluster_affinity(t1: ete4.Tree, t2: ete4.Tree, disable_bar=False) -> float:
     t1_cmap = t1.get_cached_content(prop="name")
     tree_dist = 0
-    with alive_bar(len(t1_cmap)) as bar:
+    with alive_bar(len(t1_cmap), disable=disable_bar) as bar:
         for i in t1.traverse("postorder"):
-            dist = rooted_cdist(t1_cmap[i],t2)
-            i.add_prop("c_dist",dist/max(1,min(len(t1_cmap[i])-1,len(t1)-len(t1_cmap[i]))))
+            dist = rooted_cdist(t1_cmap[i], t2)
+            i.add_prop(
+                "c_dist",
+                dist / max(1, min(len(t1_cmap[i]) - 1, len(t1) - len(t1_cmap[i]))),
+            )
             tree_dist += dist
             bar()
     return tree_dist
 
-def rooted_cluster_support(t1:ete4.Tree,t2:ete4.Tree) -> float:
+
+def rooted_cluster_support(t1: ete4.Tree, t2: ete4.Tree) -> float:
     t1_cmap = t1.get_cached_content(prop="name")
     tree_dist = 0
     with alive_bar(len(t1_cmap)) as bar:
         for i in t1.traverse("postorder"):
-            dist = rooted_cdist(t1_cmap[i],t2)/len(t1_cmap[i])
-            i.add_prop("c_dist",dist)
+            dist = rooted_cdist(t1_cmap[i], t2) / len(t1_cmap[i])
+            i.add_prop("c_dist", dist)
             tree_dist += dist
             bar()
     return tree_dist
 
-def unrooted_cluster_affinity(t1,t2):
+
+def unrooted_cluster_affinity(t1, t2):
     t1_cmap = t1.get_cached_content(prop="name")
     n = len(t1)
     tree_dist = 0
@@ -40,14 +46,15 @@ def unrooted_cluster_affinity(t1,t2):
     with alive_bar(n) as bar:
         for i in t1.traverse("postorder"):
             if i.parent and not i.parent.is_root:
-                tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
+                tree_dist += unrooted_cdist(t1_cmap[i], t2, n)
             elif flag == 0:
-                tree_dist += unrooted_cdist(t1_cmap[i],t2,n)
+                tree_dist += unrooted_cdist(t1_cmap[i], t2, n)
                 flag = 1
             bar()
     return tree_dist
 
-def unrooted_cdist(c,t2,n):
+
+def unrooted_cdist(c, t2, n):
     mindist = math.inf
     maxdist = 0
     intersection_lookup = dict()
@@ -57,23 +64,26 @@ def unrooted_cdist(c,t2,n):
         if i.is_leaf:
             if i.name in c:
                 intersection = 1
-            else: 
+            else:
                 intersection = 0
         else:
             for ch in i.children:
                 intersection += intersection_lookup[ch.id]
         intersection_lookup[i.id] = intersection
-        newdist = len(c) + len(t2lookup[i]) - 2*intersection
+        newdist = len(c) + len(t2lookup[i]) - 2 * intersection
         if mindist > newdist:
             mindist = newdist
         if maxdist < newdist and len(c) != n:
             maxdist = maxdist
-    return min(mindist,n-maxdist)
+    return min(mindist, n - maxdist)
 
-'''
+
+"""
     rooted_cdist: Cluster -> Tree -> Int
-'''
-def rooted_cdist(c:cluster,t2:ete4.Tree)-> int:
+"""
+
+
+def rooted_cdist(c: cluster, t2: ete4.Tree) -> int:
     mindist = math.inf
     intersection_lookup = dict()
     t2lookup = t2.get_cached_content(prop="name")
@@ -88,12 +98,13 @@ def rooted_cdist(c:cluster,t2:ete4.Tree)-> int:
             for ch in i.children:
                 intersection += intersection_lookup[ch.id]
         intersection_lookup[i.id] = intersection
-        newdist = len(c) + len(t2lookup[i]) - 2*intersection
+        newdist = len(c) + len(t2lookup[i]) - 2 * intersection
         if mindist > newdist:
-            mindist=newdist
+            mindist = newdist
     return mindist
 
-def calculate_rooted_tau(t:ete4.Tree)->int:
+
+def calculate_rooted_tau(t: ete4.Tree) -> int:
     tau = 0
     n = len(t)
     sizemap = dict()
@@ -105,10 +116,11 @@ def calculate_rooted_tau(t:ete4.Tree)->int:
             for ch in i.children:
                 s += sizemap[ch.id]
         sizemap[i.id] = s
-        tau += min(s-1,n-s)
-    return tau 
+        tau += min(s - 1, n - s)
+    return tau
 
-def calculate_rooted_phi(t:ete4.Tree)->float:
+
+def calculate_rooted_phi(t: ete4.Tree) -> float:
     phi = 0
     n = len(t)
     sizemap = dict()
@@ -120,8 +132,9 @@ def calculate_rooted_phi(t:ete4.Tree)->float:
             for ch in i.children:
                 s += sizemap[ch.id]
         sizemap[i.id] = s
-        phi += min(s-1,n-s)/s
+        phi += min(s - 1, n - s) / s
     return phi
+
 
 def calculate_unrooted_tau(t):
     tau = 0
@@ -137,10 +150,29 @@ def calculate_unrooted_tau(t):
                 s += sizemap[ch.id]
         sizemap[i.id] = s
         if i.parent and not i.parent.is_root:
-            tau += min(s-1,n-s-1)
+            tau += min(s - 1, n - s - 1)
         elif flag == 0:
-            tau += min(s-1,n-s-1)
+            tau += min(s - 1, n - s - 1)
             flag = 1
     return tau
 
 
+def calculate_unrooted_phi(t):
+    phi = 0
+    n = len(t)
+    sizemap = dict()
+    flag = 0
+    for i in t.traverse("postorder"):
+        if i.is_leaf:
+            s = 1
+        else:
+            s = 0
+            for ch in i.children:
+                s += sizemap[ch.id]
+        sizemap[i.id] = s
+        if i.parent and not i.parent.is_root:
+            phi += min(s - 1, n - s - 1) / s
+        elif flag == 0:
+            phi += min(s - 1, n - s - 1) / s
+            flag = 1
+    return phi
