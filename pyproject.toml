@@ -25,4 +25,6 @@ Issues = "https://github.com/swagle8987/cluster_affinity/issues"
 markers = [
     "slow",
     "prop",
+    "optional",
+    "perf"
 ]

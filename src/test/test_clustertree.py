@@ -80,5 +80,48 @@ class TestClusterComputation:
                                                cluster_affinity.rooted_cluster_affinity(t1,t2))
             assert dist <= phi
 
+    @pytest.mark.prop
+    def test_transfer_index_zero(self):
+        dist,_ = transfer_index.compute_transfer_index(self.t1,self.t1)
+        assert dist == 0
 
+    @pytest.mark.prop
+    def test_transfer_index_nonzero(self):
+        dist,_ = transfer_index.compute_transfer_index(self.t1,self.t2)
+        assert dist == 2
 
+    @pytest.mark.slow
+    @pytest.mark.optional
+    def test_transfer_index_mock(self):
+        ntax = 100
+        labels = ["l{}".format(i) for i in range(ntax)]
+        for i in range(1000):
+            t1 = Tree()
+            t1.populate(100,names=labels)
+            t2 = Tree()
+            t2.populate(100,names=labels)
+            print(i)
+            dist = cluster_affinity.rooted_cluster_affinity(t1,t2)
+            tau = cluster_affinity.calculate_rooted_tau(t1)
+            rdist,_=transfer_index.compute_transfer_index(t1,t2)
+            assert dist == rdist,"{} {} {}".format(i,dist,rdist)
+            assert rdist <= tau
+
+    @pytest.mark.slow
+    @pytest.mark.optional
+    @pytest.mark.perf
+    def test_transfer_index_mock(self):
+        import timeit
+        ntax = 100
+        print("CA,TI")
+        for e in range(3,6):
+            ntax = 10 ** e
+            labels = ["l{}".format(i) for i in range(ntax)]
+            for i in range(100):
+                t1 = Tree()
+                t1.populate(ntax,names=labels)
+                t2 = Tree()
+                t2.populate(ntax,names=labels)
+                ca_test = lambda :cluster_affinity.rooted_cluster_affinity(t1,t2,disable_bar=True)
+                transfer_test = lambda :transfer_index.compute_transfer_index(t1,t2)
+                print("{},{},{}".format(ntax,timeit.timeit(ca_test,globals=globals(),number=1),timeit.timeit(transfer_test,globals=globals(),number=1)))
