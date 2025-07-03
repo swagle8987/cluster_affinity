@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
-import ete4
 import math
+from collections import deque
+from itertools import islice
+
 
 def annotate_heavy_nodes(t):
     count = 0
     t1_cmap = t.get_cached_content(prop="name")
     for n in t.traverse("postorder"):
         n.add_prop("path_id",count)
+        count += 1
         if n.is_leaf:
             pass
         else:
@@ -20,17 +23,30 @@ def annotate_heavy_nodes(t):
                 v.add_prop("is_heavy",False)
 
 
+
+def get_heavy_child(node):
+    children = node.children
+    light_children = [i for i in children if not i.get_prop("is_heavy")]
+    for i in children:
+        if i.get_prop("is_heavy"):
+            heavy_child = i
+            break
+    return heavy_child,light_children
+
+
 def get_maximal_heavy_paths(t):
+    annotate_heavy_nodes(t)
+    nodes = deque()
     paths = []
-    for l in t:
-        v = l
-        p = [l]
-        while v.is_leaf or v.get_prop("is_heavy",default=False):
-            v = v.parent
-            p.append(v)
-        heavy_path = HeavyPath(p)
-        for i in p:
-            i.add_prop("path",heavy_path)
+    nodes.append(t)
+    while nodes:
+        v = nodes.popleft()
+        p = HeavyPath([v])
+        while not v.is_leaf:
+            heavy_child,light_children = get_heavy_child(v)
+            nodes.extend(light_children)
+            v = heavy_child
+            p.append(heavy_child)
         paths.append(p)
     return paths
 
@@ -48,16 +64,16 @@ class PathTree:
             self.node = p[0]
             self.node.add_prop("path_tree",self)
             self.D = len(self.node)
-        self.minval = len(self.rootpath.get_last())
-        self.maxval = len(self.rootpath.get_first())
+        self.minval = len(self.rootpath[-1])
+        self.maxval = len(self.rootpath[0])
 
 
     def get_first(self):
-        return self.rootpath.get_first()
+        return self.rootpath[0]
 
     def get_last(self):
-        return self.rootpath.get_last()
-    
+        return self.rootpath[-1]
+
     def get_parent(self):
         return self.parent
 
@@ -75,7 +91,10 @@ class HeavyPath:
         else:
             self.first = None
             self.last=None
+        for v in path:
+            v.add_prop("path",self)
         self.nodes = set(path)
+        self.path = path
 
 
     def get_first(self):
@@ -84,5 +103,32 @@ class HeavyPath:
     def get_last(self):
         return self.last
 
-    def contains(self,x):
+    def __contains__(self,x):
         return x in self.nodes
+
+    def __getitem__(self,key):
+        return self.path[key]
+
+    def slice(self,stop):
+        return self.path[:stop]
+
+    def slice(self,start,stop,step=None):
+        return self.path[start:stop:step]
+
+    def __setitem__(self,key,value):
+        self.path[key] = value
+
+    def __len__(self):
+        return len(self.path)
+
+    def __str__(self):
+        return " -> ".join([str(i.get_prop("path_id")) for i in self.path])
+
+    def __repr__(self):
+        return "Heavy Path {}".format(self.get_first().name)
+
+    def append(self,x):
+        self.last = x
+        self.nodes.add(x)
+        self.path.append(x)
+        x.add_prop("path",self)

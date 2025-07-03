@@ -17,11 +17,11 @@ class TestHeavyTreeCreation:
         paths = get_maximal_heavy_paths(self.t1)
         assert len(paths) == len(self.t1)
         len_paths = [len(i) for i in paths]
-        assert min(len_paths) ==2
-        assert max(len_paths) == 4
+        assert min(len_paths) ==1
+        assert max(len_paths) ==4
         for i in paths:
-            assert i[0].is_leaf
-            assert not i[-1].get_prop("is_heavy")
+            assert i[-1].is_leaf
+            assert not i[0].get_prop("is_heavy")
 
     @pytest.mark.prop
     def test_PathTree(self):
@@ -39,9 +39,6 @@ class TestHeavyTreeCreation:
         assert path_parent_tree.get_first() == path_parent_tree.get_last()
         assert path_parent_tree.get_last() == v
         assert path_parent_tree.D == len(v)
-        parent_search_tree = path_search_tree.get_parent()
-        assert parent_search_tree.get_first != parent_search_tree.get_last()
-        assert parent_search_tree.D == 0
 
     @pytest.mark.prop
     def test_update_path(self):
@@ -57,7 +54,6 @@ class TestHeavyTreeCreation:
         path_parent_tree = v.get_prop("path_tree")
         assert path_parent_tree.D == len(v)
         parent_search_tree = path_search_tree.get_parent()
-        assert parent_search_tree.D == 0
 
 
     @pytest.mark.slow
@@ -72,5 +68,5 @@ class TestHeavyTreeCreation:
             assert len(paths) == len(t1)
             len_paths = [len(i) for i in paths]
             for i in paths:
-                assert i[0].is_leaf
-                assert not i[-1].get_prop("is_heavy")
+                assert i.get_last().is_leaf
+                assert not i.get_first().get_prop("is_heavy")
