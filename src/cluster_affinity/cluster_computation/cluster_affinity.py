@@ -39,18 +39,25 @@ def rooted_cluster_support(t1: ete4.Tree, t2: ete4.Tree) -> float:
 
 
 def unrooted_cluster_affinity(t1, t2):
-    t1_cmap = t1.get_cached_content(prop="name")
+    t1_bipartitions = t1.edges()
+    t2_bipartitions = list(t2.edges())
     n = len(t1)
     tree_dist = 0
-    flag = 0
     with alive_bar(n) as bar:
-        for i in t1.traverse("postorder"):
-            if i.parent and not i.parent.is_root:
-                tree_dist += unrooted_cdist(t1_cmap[i], t2, n)
-            elif flag == 0:
-                tree_dist += unrooted_cdist(t1_cmap[i], t2, n)
-                flag = 1
-            bar()
+        for i in t1_bipartitions:
+            if len(i[1]) > 0 and len(i[1])<n:
+                mindist = math.inf
+                for j in t2_bipartitions:
+                    if len(j[1])>0 and len(j[1])<n:
+                        c = set([l.name for l in i[1]])
+                        x = set([l.name for l in j[1]])
+                        cdx=len(c^x)
+                        cdist = min(cdx, n-cdx)
+                        if cdist<0:
+                            raise RuntimeError()
+                        if cdist < mindist:
+                            mindist = cdist
+                tree_dist += mindist
     return tree_dist
 
 
@@ -141,19 +148,9 @@ def calculate_unrooted_tau(t):
     n = len(t)
     sizemap = dict()
     flag = 0
-    for i in t.traverse("postorder"):
-        if i.is_leaf:
-            s = 1
-        else:
-            s = 0
-            for ch in i.children:
-                s += sizemap[ch.id]
-        sizemap[i.id] = s
-        if i.parent and not i.parent.is_root:
-            tau += min(s - 1, n - s - 1)
-        elif flag == 0:
-            tau += min(s - 1, n - s - 1)
-            flag = 1
+    for i in t.edges():
+        if len(i[0]) > 0 and len(i[0]) < n:
+            tau += min(len(i[0])-1,n-len(i[0])-1)
     return tau
 
 
