@@ -13,9 +13,9 @@ description="A tool to calculate the cluster affinity distance between two trees
 readme="README.md"
 
 [project.scripts]
-cluster_affinity = "main:cluster_affinity_script"
+cluster_affinity = "cluster_affinity.cli:cluster_affinity"
 cluster_matrix = "main:cluster_matrix"
-cluster_support = "main:cluster_support_script"
+cluster_support = "cluster_affinity.cli:cluster_support"
 
 [project.urls]
 Homepage = "https://github.com/swagle8987/cluster_affinity"

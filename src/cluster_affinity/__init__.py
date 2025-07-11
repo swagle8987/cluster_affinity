@@ -9,4 +9,5 @@ from .cluster_computation import (
     compute_transfer_index,
 )
 from .main import cluster_affinity_script
+from .cli import cluster_affinity,cluster_support
 from .utils import peek_line, convert_dict_to_2d_array, make_matrix_image

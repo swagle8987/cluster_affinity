@@ -60,7 +60,6 @@ def unrooted_cluster_affinity(t1, t2):
                 tree_dist += mindist
     return tree_dist
 
-
 def unrooted_cdist(c, t2, n):
     mindist = math.inf
     maxdist = 0
@@ -159,17 +158,7 @@ def calculate_unrooted_phi(t):
     n = len(t)
     sizemap = dict()
     flag = 0
-    for i in t.traverse("postorder"):
-        if i.is_leaf:
-            s = 1
-        else:
-            s = 0
-            for ch in i.children:
-                s += sizemap[ch.id]
-        sizemap[i.id] = s
-        if i.parent and not i.parent.is_root:
-            phi += min(s - 1, n - s - 1) / s
-        elif flag == 0:
-            phi += min(s - 1, n - s - 1) / s
-            flag = 1
+    for i in t.edges():
+        if len(i[0]) > 0 and len(i[0]) < n:
+            phi += min(len(i[0])-1,n-len(i[0])-1)/len(i[0])
     return phi

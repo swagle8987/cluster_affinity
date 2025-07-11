@@ -9,18 +9,9 @@ class TestReader:
     rooted_extended_newick_string = "[&R] ((A,B),(C,D));"
     unrooted_extended_newick_string = "[&U] ((A,B),(C,D));"
 
-    rooted_base_nexus_string = """#NEXUS
-    Begin TREES;
-    tree testtree1 = ((A,B),(C,D));
-    END;"""
-    rooted_extended_nexus_string = """#NEXUS
-    Begin TREES;
-    tree testtree1 = [&R] ((A,B),(C,D));
-    END;"""
-    unrooted_extended_nexus_string = """#NEXUS
-    Begin TREES;
-    tree testtree1 = [&U] ((A,B),(C,D));
-    END;"""
+    rooted_base_nexus_string = """#NEXUS\nBegin TREES;\nTree testtree1 = ((A,B),(C,D));\nEND;"""
+    rooted_extended_nexus_string = """#NEXUS\nBegin TREES;\nTree testtree1 = [&R] ((A,B),(C,D));\nEND;"""
+    unrooted_extended_nexus_string = """#NEXUS\nBegin TREES;\ntree testtree1 = [&U] ((A,B),(C,D));\nEND;"""
 
     @pytest.mark.prop
     def test_read_rooted_base_newick(self):

@@ -33,7 +33,7 @@ def get_tree(path, ftype=None):
         ftype = "nexus" if data[:6] == "#NEXUS" else "newick"
     if ftype == "newick":
         string_match = re.fullmatch(
-            r"(\[&[RU]\])? ?([(\w\d:\.,)]+;)", data, flags=re.MULTILINE
+            r"(\[&[RU]\])? ?([(\w\d:\.\-,\/)]+;)", data, flags=re.MULTILINE
         )
         if string_match:
             if string_match[1]:
@@ -52,26 +52,14 @@ def get_tree(path, ftype=None):
                 "Could not match regex to data found in newick file;\n Is the data malformed?",
             )
     elif ftype == "nexus":
-        warnings.warn(
-            "Nexus trees are considered as-is i.e. there is no translation or other features",
-            UserWarning,
-        )
-        string_match = re.search(
-            r"Begin TREES;\n *tree *([\w\d]+) *= *(\[&[RU]\])? ?([(\w,)]+;)\n *END;",
-            path,
-            flags=re.MULTILINE,
-        )
-        tree = Tree(string_match[3], parser=1)
-        tree.add_prop("tree_name", string_match[1])
-        if string_match[2]:
-            if string_match[2] == "[&U]":
-                rooting = False
-            elif string_match[2] == "[&R]":
-                rooting = True
-            else:
-                raise FileFormatError(path, "Invalid rooting state in nexus file")
+        tdict = nexus.loads(data)
+        tree = list(tdict.values())[0]
+        tree.add_prop("tree_name", list(tdict.keys())[0])
+        if "[&U]" in data:
+            rooting = False
         else:
             rooting = True
+        
     else:
         raise FileFormatError(path, "Invalid file type")
     return tree, rooting
