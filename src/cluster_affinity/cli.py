@@ -53,11 +53,12 @@ def get_default_args(name, description):
         help="The target tree to which the cost is to be calculated",
         type=pathlib.Path,
     )
-    parser.add_argument("-t", "--filetype", help="The input file format")
-    parser.add_argument(
+    parser.add_argument("--filetype", help="The input file format")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
         "--cli", help="Disables interactive browser", action="store_true"
     )
-    parser.add_argument(
+    group.add_argument(
         "--color_only",
         help="Disables node annotations(useful when visualizing dense trees)",
         action="store_true",
@@ -83,6 +84,44 @@ def cluster_affinity():
 def cluster_support():
     cluster_cost_script(support=True)
 
+def get_dist(cost,t1,t2,t1_is_rooted,t2_is_rooted,**kwargs):
+    dist = -1
+    if check_input_trees([t1, t2]):
+        if (not ("cli" in kwargs and kwargs["cli"])) or not (check_strictly_binary(t1) and check_strictly_binary(t2)):
+            if t1_is_rooted and t2_is_rooted:
+                cost = "Rooted "+cost
+                if "Support" in cost:
+                    dist = rooted_cluster_support(t1,t2)/calculate_rooted_phi(t1)
+                else:
+                    dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
+            elif not t1_is_rooted:
+                cost = "Unrooted "+cost
+                if support:
+                    raise RuntimeError("Unrooted Cluster Support is not supported")
+                else:
+                    dist = unrooted_cluster_affinity(t1,t2)/calculate_unrooted_tau(t1)
+            else:
+                raise RuntimeError("Rooted to unrooted comparisons are not supported")
+        else:
+            if t1_is_rooted and t2_is_rooted:
+                cost = "Rooted " + cost
+                dist = compute_transfer_index(
+                    t1, t2, cost=cost, annotate_cost=False
+                ) / calculate_rooted_tau(t1)
+            elif not t1_is_rooted:
+                cost = "Unrooted " + cost
+                if "Support" in cost:
+                    raise RuntimeError("Unrooted Cluster Support is not supported")
+                dist = compute_transfer_index(
+                    t1, t2, cost=cost, annotate_cost=False
+                ) / calculate_unrooted_tau(t1)
+            else:
+                raise RuntimeError("Rooted to unrooted comparisons are not supported")
+    else:
+        raise RuntimeError(
+            "Tree {} and {} have different taxa set".format(args.t1, args.t2)
+        )
+    return dist
 
 def cluster_cost_script(support=False):
     if support:
@@ -109,43 +148,8 @@ def cluster_cost_script(support=False):
         newnode.add_child(child=t2)
         newnode.add_child(child=t2.children[0].detach())
         t2 = newnode
-    if check_input_trees([t1, t2]):
-        if (not args.cli) or not (check_strictly_binary(t1) and check_strictly_binary(t2)):
-            if t1_is_rooted and t2_is_rooted:
-                cost = "Rooted "+cost
-                if support:
-                    dist = rooted_cluster_support(t1,t2)/calculate_rooted_phi(t1)
-                else:
-                    dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
-            elif not t1_is_rooted:
-                cost = "Unrooted "+cost
-                if support:
-                    raise RuntimeError("Unrooted Cluster Support is not supported")
-                else:
-                    dist = unrooted_cluster_affinity(t1,t2)/calculate_unrooted_tau(t1)
-            else:
-                raise RuntimeError("Rooted to unrooted comparisons are not supported")
-        else:
-            if t1_is_rooted and t2_is_rooted:
-                cost = "Rooted " + cost
-                dist = compute_transfer_index(
-                    t1, t2, cost=cost, annotate_cost=(not args.cli)
-                ) / calculate_rooted_tau(t1)
-            elif not t1_is_rooted:
-                cost = "Unrooted " + cost
-                if support:
-                    raise RuntimeError("Unrooted Cluster Support is not supported")
-                dist = compute_transfer_index(
-                    t1, t2, cost=cost, annotate_cost=(not args.cli)
-                ) / calculate_unrooted_tau(t1)
-            else:
-                raise RuntimeError("Rooted to unrooted comparisons are not supported")
-        if not args.cli:
-            print(t1.id)
-            start_web_server(t1, t2, cost, args.color_only, args.t1.name, args.t2.name)
-        else:
-            print(dist)
+    dist = get_dist(cost,t1,t2,t1_is_rooted,t2_is_rooted,cli=args.cli)
+    if not args.cli:
+        start_web_server(t1, t2, cost, args.color_only, args.t1.name, args.t2.name)
     else:
-        raise RuntimeError(
-            "Tree {} and {} have different taxa set".format(args.t1, args.t2)
-        )
+        print(dist)
