@@ -8,15 +8,8 @@ from ete4.smartview import (
     HeatmapFace,
     LegendFace,
 )
-import matplotlib.cm as cm
-from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
-
-COLOR_RANGE = [
-    rgb2hex(to_rgb("xkcd:evergreen")),
-    rgb2hex("#ffad01"),
-    rgb2hex("#ff0000"),
-]
-cmap = LinearSegmentedColormap.from_list("custom_tree_map", colors=COLOR_RANGE)
+from .config import cmap,COLOR_RANGE
+from matplotlib.colors import rgb2hex, to_rgb
 
 
 def generate_layout(cost, color_only):
@@ -37,9 +30,9 @@ def generate_layout(cost, color_only):
             if node.is_leaf or node.is_root:
                 yield PropFace("name", fs_min=11, position="right")
             else:
-                yield PropFace(cost, fmt="%.3f", fs_min=11, position="right")
-        if cost in node.props:
-            color = rgb2hex(cmap(node.props[cost])[:3])
+                yield PropFace("c_dist", fmt="%.3f", fs_min=11, position="right")
+        if "c_dist" in node.props:
+            color = rgb2hex(cmap(node.props["c_dist"])[:3])
         else:
             color = rgb2hex(cmap(0)[:3])  ## The root and leaves have zero cost always
         yield {
