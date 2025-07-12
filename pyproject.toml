@@ -26,5 +26,6 @@ markers = [
     "slow",
     "prop",
     "optional",
-    "perf"
+    "perf",
+    "cli"
 ]
