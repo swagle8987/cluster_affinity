@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 dependencies = ["ete4","matplotlib","alive-progress"]
 name="cluster_affinity"
-version="0.4.1"
+version="0.5.0"
 authors = [
 	{name="Sanket Wagle", email="swagle@iastate.edu"}
 ]
@@ -13,9 +13,9 @@ description="A tool to calculate the cluster affinity distance between two trees
 readme="README.md"
 
 [project.scripts]
-cluster_affinity = "main:cluster_affinity_script"
-cluster_matrix = "main:cluster_matrix"
-cluster_support = "main:cluster_support_script"
+cluster_affinity = "cluster_affinity.cli:cluster_affinity"
+cluster_matrix = "cluster_affinity.matrix:cluster_matrix"
+cluster_support = "cluster_affinity.cli:cluster_support"
 
 [project.urls]
 Homepage = "https://github.com/swagle8987/cluster_affinity"
@@ -25,4 +25,7 @@ Issues = "https://github.com/swagle8987/cluster_affinity/issues"
 markers = [
     "slow",
     "prop",
+    "optional",
+    "perf",
+    "cli"
 ]
