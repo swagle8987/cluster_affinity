@@ -34,7 +34,7 @@ class TestClusterScript:
         assert args.cli == True
 
     @pytest.mark.cli
-    def tselfest_cluster_script_arguments_filetype():
+    def tselfest_cluster_script_arguments_filetype(self):
         args = self.parser.parse_args("t1.tre t2.tre --filetype newick".split())
         assert args.filetype == "newick"
 

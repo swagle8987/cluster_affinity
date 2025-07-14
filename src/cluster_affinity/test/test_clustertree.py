@@ -54,9 +54,9 @@ class TestClusterComputation:
         labels = ["l{}".format(i) for i in range(ntax)]
         for i in range(1000):
             t1 = Tree()
-            t1.populate(100, names=labels)
+            t1.populate(ntax, names=labels)
             t2 = Tree()
-            t2.populate(100, names=labels)
+            t2.populate(ntax, names=labels)
             dist = cluster_affinity.rooted_cluster_affinity(t1, t2)
             tau = cluster_affinity.calculate_rooted_tau(t1)
             assert dist >= 0, "{} {} {}".format(
@@ -71,9 +71,9 @@ class TestClusterComputation:
         labels = ["l{}".format(i) for i in range(ntax)]
         for i in range(1000):
             t1 = Tree()
-            t1.populate(100, names=labels)
+            t1.populate(ntax, names=labels)
             t2 = Tree()
-            t2.populate(100, names=labels)
+            t2.populate(ntax, names=labels)
             dist = cluster_affinity.rooted_cluster_support(t1, t2)
             phi = cluster_affinity.calculate_rooted_phi(t1)
             assert dist >= 0, "{} {} {}".format(
@@ -97,9 +97,9 @@ class TestClusterComputation:
         labels = ["l{}".format(i) for i in range(ntax)]
         for i in range(1000):
             t1 = Tree()
-            t1.populate(100, names=labels)
+            t1.populate(ntax, names=labels)
             t2 = Tree()
-            t2.populate(100, names=labels)
+            t2.populate(ntax, names=labels)
             dist = cluster_affinity.rooted_cluster_affinity(t1, t2)
             tau = cluster_affinity.calculate_rooted_tau(t1)
             rdist = transfer_index.compute_transfer_index(
@@ -116,9 +116,9 @@ class TestClusterComputation:
         labels = ["l{}".format(i) for i in range(ntax)]
         for i in range(1000):
             t1 = Tree()
-            t1.populate(100, names=labels)
+            t1.populate(ntax, names=labels)
             t2 = Tree()
-            t2.populate(100, names=labels)
+            t2.populate(ntax, names=labels)
             dist = cluster_affinity.unrooted_cluster_affinity(t1, t2)
             tau = cluster_affinity.calculate_unrooted_tau(t1)
             rdist = transfer_index.compute_transfer_index(

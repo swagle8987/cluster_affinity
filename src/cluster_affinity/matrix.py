@@ -45,7 +45,7 @@ def _get_trees(paths,ftype=None):
             with open(path,"r") as file:
                 data = file.read().strip()
         elif isinstance(path, str):
-            data = file.read().strip()
+            data= path
         else:
             raise RuntimeError(f"Invalid input {path} to _get_tree")
 
@@ -57,7 +57,7 @@ def _get_trees(paths,ftype=None):
                 print(f"Reading tree {ind}")
                 trees[f"tree_{ind+1}"] = Tree(t.strip(), parser=1)
         elif ftype == "nexus":
-            trees.update(nexus.loads(open(args.t).read()))
+            trees.update(nexus.loads(data))
         else:
             raise RuntimeWarning("Unsupported file format")
     return trees
