@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from ete4 import Tree, nexus
+from ete4 import Tree, nexus,newick
 import os
 import re
 from pathlib import Path
@@ -45,7 +45,7 @@ def get_tree(path, ftype=None):
                     raise FileFormatError(path, "Invalid rooting state in newick file")
             else:
                 rooting = True
-            tree = Tree(string_match[2], parser=1)
+            tree = newick.loads(string_match[2], parser=1)
         else:
             raise FileFormatError(
                 path,
