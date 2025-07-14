@@ -50,4 +50,4 @@ The following command generates the matrix with the cluster support cost instead
     cluster_matrix t.tre matrix.png --cost cluster_support
 ``
 
-Further options can be accessed using ``cluster_affinity -h`` 
+Further options can be accessed using ``cluster_affinity -h`` and ``cluster_matrix -h`` 
