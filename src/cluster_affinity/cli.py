@@ -3,6 +3,7 @@
 #
 import importlib.metadata
 import argparse
+import re
 
 from .reader import get_tree
 from .cluster_computation import (
@@ -30,9 +31,9 @@ def check_input_trees(tlist) -> bool:
     return True
 
 
-def check_strictly_binary(t)->bool:
+def check_strictly_binary(t) -> bool:
     for i in t.traverse():
-        if len(i.children)>2 or len(i.children)==1:
+        if len(i.children) > 2 or len(i.children) == 1:
             return False
     return True
 
@@ -70,10 +71,11 @@ def get_default_args(name, description):
         action="version",
         version=importlib.metadata.version("cluster_affinity"),
     )
+    parser.add_argument("--regex", help="Define regex to select pattern from data.")
     parser.add_argument(
-            "--unrooted",
-            action="store_true"
-            )
+        "--replacement",
+        help="Replaces each occurence of regex with the specified string",
+    )
     return parser
 
 
@@ -84,21 +86,24 @@ def cluster_affinity():
 def cluster_support():
     cluster_cost_script(support=True)
 
-def get_dist(cost,t1,t2,t1_is_rooted,t2_is_rooted,**kwargs):
+
+def get_dist(cost, t1, t2, t1_is_rooted, t2_is_rooted, **kwargs):
     dist = -1
-    if (not ("cli" in kwargs and kwargs["cli"])) or not (check_strictly_binary(t1) and check_strictly_binary(t2)):
+    if (not ("cli" in kwargs and kwargs["cli"])) or not (
+        check_strictly_binary(t1) and check_strictly_binary(t2)
+    ):
         if t1_is_rooted and t2_is_rooted:
-            cost = "Rooted "+cost
+            cost = "Rooted " + cost
             if "Support" in cost:
-                dist = rooted_cluster_support(t1,t2)/calculate_rooted_phi(t1)
+                dist = rooted_cluster_support(t1, t2) / calculate_rooted_phi(t1)
             else:
-                dist = rooted_cluster_affinity(t1,t2)/calculate_rooted_tau(t1)
+                dist = rooted_cluster_affinity(t1, t2) / calculate_rooted_tau(t1)
         elif not t1_is_rooted:
-            cost = "Unrooted "+cost
+            cost = "Unrooted " + cost
             if "Support" in cost:
                 raise RuntimeError("Unrooted Cluster Support is not supported")
             else:
-                dist = unrooted_cluster_affinity(t1,t2)/calculate_unrooted_tau(t1)
+                dist = unrooted_cluster_affinity(t1, t2) / calculate_unrooted_tau(t1)
         else:
             raise RuntimeError("Rooted to unrooted comparisons are not supported")
     else:
@@ -118,6 +123,17 @@ def get_dist(cost,t1,t2,t1_is_rooted,t2_is_rooted,**kwargs):
             raise RuntimeError("Rooted to unrooted comparisons are not supported")
     return dist
 
+
+def translate_tree_tips(t, regex, substitution=None, flags=re.NOFLAG):
+    regex_pattern = re.compile(regex, flags=flags)
+    for i in t:
+        if substitution is not None:
+            new_name = regex_pattern.sub(substitution, i.name)
+        else:
+            new_name = regex_pattern.search(i.name).group(0)
+        i.name = new_name
+
+
 def cluster_cost_script(support=False):
     if support:
         cost = "Cluster Support"
@@ -127,24 +143,31 @@ def cluster_cost_script(support=False):
         name=cost,
         description="Calculates the Asymmetric {} cost from t1 to t2".format(cost),
     )
+    if not support:
+        parser.add_argument("--unrooted", action="store_true")
     args = parser.parse_args()
+    if args.replacement and not args.regex:
+        parser.error("Replacement string requires regex specification")
     t1, t1_is_rooted = get_tree(args.t1, args.filetype)
     t2, t2_is_rooted = get_tree(args.t2, args.filetype)
     if args.unrooted:
         t1_is_rooted = False
         t2_is_rooted = False
-    if not t1_is_rooted and len(t1.children)> 2:
+    if not t1_is_rooted and len(t1.children) > 2:
         newnode = ete4.Tree()
         newnode.add_child(child=t1)
         newnode.add_child(child=t1.children[0].detach())
         t1 = newnode
-    if not t2_is_rooted and len(t2.children)> 2:
+    if not t2_is_rooted and len(t2.children) > 2:
         newnode = ete4.Tree()
         newnode.add_child(child=t2)
         newnode.add_child(child=t2.children[0].detach())
         t2 = newnode
+    if args.regex:
+        translate_tree_tips(t1, args.regex, args.replacement)
+        translate_tree_tips(t2, args.regex, args.replacement)
     if check_input_trees([t1, t2]):
-        dist = get_dist(cost,t1,t2,t1_is_rooted,t2_is_rooted,cli=args.cli)
+        dist = get_dist(cost, t1, t2, t1_is_rooted, t2_is_rooted, cli=args.cli)
     else:
         raise RuntimeError(
             "Tree {} and {} have different taxa set".format(args.t1, args.t2)
