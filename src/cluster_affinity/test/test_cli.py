@@ -21,8 +21,16 @@ class TestClusterScript:
 
     @pytest.mark.cli
     def test_cluster_script_regex(self):
-        args = self.parser.parse_args("t1.tre t2.tre --regex [A-z] test".split())
-        assert args.regex == ["[A-z]", "test"]
+        args = self.parser.parse_args("t1.tre t2.tre --regex [A-z]".split())
+        assert args.regex == "[A-z]"
+
+    @pytest.mark.cli
+    def test_cluster_script_regex(self):
+        args = self.parser.parse_args(
+            "t1.tre t2.tre --regex [A-z] --replacement 10".split()
+        )
+        assert args.regex == "[A-z]"
+        assert args.replacement == "10"
 
     @pytest.mark.cli
     def test_cluster_script_arguments_color_only(self):
