@@ -38,15 +38,12 @@ def generate_layout(cost, color_only):
         yield {
             "hz-line": {
                 "stroke": color,
-                "stroke-width": max(
-                    1, node.props[cost] * 5 if cost in node.props else 1
-                ),
+                "stroke-width": max(1,node.props["c_dist"] * 5 if "c_dist" in node.props else 1),
             },
             "vt-line": {
                 "stroke": color,
-                "stroke-width": max(
-                    1, node.props[cost] * 5 if cost in node.props else 1
-                ),
+                "stroke-width": max(1,node.props["c_dist"] * 5 if "c_dist" in node.props else 1),
+                
             },
         }
 

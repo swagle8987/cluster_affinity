@@ -89,6 +89,10 @@ def cluster_matrix():
     else:
         vmin=0
         vmax=1
+    if args.csv_output:
+        csv_matrix = np.vstack([xlabels,matrix])
+        csv_matrix = np.hstack([np.array(["index"]+xlabels).reshape(len(csv_matrix),1),csv_matrix])
+        np.savetxt(args.csv_output,csv_matrix,fmt="%s",delimiter=",")
     make_matrix_image(
         matrix, args.outfile, xlabels=xlabels, ylabels=xlabels, cmap=cmap, vmin=0,vmax=1
     )
