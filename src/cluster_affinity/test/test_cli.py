@@ -5,23 +5,32 @@ from argparse import ArgumentError
 
 import pytest
 
+
 class TestClusterScript:
-    parser = get_default_args("cluster Affinity test","CA testing enviroment")
+    parser = get_default_args("cluster Affinity test", "CA testing enviroment")
 
     @pytest.mark.cli
     def test_cluster_script_base_call(self):
         args = self.parser.parse_args("t1.tre t2.tre".split())
         assert args.t1 == Path("t1.tre")
         assert args.t2 == Path("t2.tre")
-        assert args.unrooted == False
         assert args.cli == False
         assert args.color_only == False
         assert args.filetype == None
+        assert args.regex == None
 
     @pytest.mark.cli
-    def test_cluster_script_arguments_unrooted(self):
-        args = self.parser.parse_args("t1.tre t2.tre --unrooted".split())
-        assert args.unrooted == True
+    def test_cluster_script_regex(self):
+        args = self.parser.parse_args("t1.tre t2.tre --regex [A-z]".split())
+        assert args.regex == "[A-z]"
+
+    @pytest.mark.cli
+    def test_cluster_script_regex(self):
+        args = self.parser.parse_args(
+            "t1.tre t2.tre --regex [A-z] --replacement 10".split()
+        )
+        assert args.regex == "[A-z]"
+        assert args.replacement == "10"
 
     @pytest.mark.cli
     def test_cluster_script_arguments_color_only(self):
@@ -34,9 +43,10 @@ class TestClusterScript:
         assert args.cli == True
 
     @pytest.mark.cli
-    def tselfest_cluster_script_arguments_filetype(self):
+    def test_cluster_script_arguments_filetype(self):
         args = self.parser.parse_args("t1.tre t2.tre --filetype newick".split())
         assert args.filetype == "newick"
+
 
 class TestMatrixScript:
     parser = get_matrix_args()
@@ -55,13 +65,12 @@ class TestMatrixScript:
 
     def test_matrix_script_variable_arguments(self):
         args = self.parser.parse_args("t1.tre t2.tre t3.tre outfile".split())
-        assert args.t == [Path("t1.tre"),Path("t2.tre"),Path("t3.tre")]
+        assert args.t == [Path("t1.tre"), Path("t2.tre"), Path("t3.tre")]
         assert args.outfile == Path("outfile")
 
     def test_matrix_script_title(self):
         args = self.parser.parse_args("t1.tre outfile --title Test".split())
         assert args.title == "Test"
-
 
     @pytest.mark.cli
     def test_matrix_script_cost_spec(self):
