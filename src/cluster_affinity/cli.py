@@ -124,7 +124,7 @@ def get_dist(cost, t1, t2, t1_is_rooted, t2_is_rooted, **kwargs):
     return dist
 
 
-def translate_tree_tips(t, regex, substitution=None, flags=re.NOFLAG):
+def translate_tree_tips(t, regex, substitution=None, flags=None):
     regex_pattern = re.compile(regex, flags=flags)
     for i in t:
         if substitution is not None:
