@@ -150,7 +150,7 @@ def cluster_cost_script(support=False):
         parser.error("Replacement string requires regex specification")
     t1, t1_is_rooted = get_tree(args.t1, args.filetype)
     t2, t2_is_rooted = get_tree(args.t2, args.filetype)
-    if args.unrooted:
+    if not support and args.unrooted:
         t1_is_rooted = False
         t2_is_rooted = False
     if not t1_is_rooted and len(t1.children) > 2:

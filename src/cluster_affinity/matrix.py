@@ -10,7 +10,7 @@ from ete4 import Tree, nexus
 from .reader import FileFormatError
 from pathlib import Path
 import numpy as np
-from .cli import get_dist
+from .cli import get_dist,check_input_trees
 
 import os
 
@@ -70,6 +70,8 @@ def cluster_matrix():
     else:
         cost = "Cluster Affinity"
     trees = _get_trees(args.t,args.filetype)
+    if not check_input_trees(list(trees.values())):
+        raise RuntimeError("The trees have incongruent taxa sets.")
     if args.average:
         matrix = np.zeros([len(trees)+1,len(trees)+1])
     else:
@@ -77,6 +79,10 @@ def cluster_matrix():
     for i,t1 in enumerate(trees.values()):
         for j,t2 in enumerate(trees.values()):
             matrix[i][j] = get_dist(cost,t1,t2,(not args.unrooted),(not args.unrooted))
+            if matrix[i][j] < 0:
+                raise RuntimeError("Invalid distance encountered. Maybe the trees have duplicate tips?")
+            elif matrix[i][j] > 1:
+                raise RuntimeError("Invalid distance encountered. Maybe the tree tips are incongruent?")
     if args.average:
         xlabels = list(trees.keys()) + ["average"]
         matrix[-1] = np.average(matrix,axis=0)

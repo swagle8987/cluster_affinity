@@ -49,7 +49,6 @@ def generate_layout(cost, color_only):
 
     return Layout(name=cost, draw_node=draw_node, draw_tree=draw_tree)
 
-
 def start_web_server(t1, t2, cost, color_only, t1_name, t2_name):
     layout = generate_layout(cost, color_only)
     add_tree(
@@ -62,5 +61,8 @@ def start_web_server(t1, t2, cost, color_only, t1_name, t2_name):
         name="Target tree ({})".format(t2_name),
         layouts=[BASIC_LAYOUT],
     )
-    print("Press any key to stop the server and finish")
-    input()
+    print("Press 'q' to stop the server and finish")
+    key=input()
+    while key!="q":
+        key=input()
+    
