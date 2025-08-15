@@ -14,5 +14,7 @@ htmlcov
 *.log
 tmp/
 **/.test-venv
+**/.nix-venv
+**/.venv
 
 test/**/*.tre

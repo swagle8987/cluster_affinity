@@ -7,7 +7,6 @@ import re
 
 from .reader import get_tree
 from .cluster_computation import (
-    compute_transfer_index,
     calculate_rooted_phi,
     calculate_rooted_tau,
     calculate_unrooted_phi,
@@ -17,7 +16,7 @@ from .cluster_computation import (
     unrooted_cluster_affinity,
 )
 
-from .visualization import start_web_server
+from .visualization import start_web_server, color_tree
 import ete4
 import pathlib
 
@@ -76,6 +75,9 @@ def get_default_args(name, description):
         "--replacement",
         help="Replaces each occurence of regex with the specified string",
     )
+    parser.add_argument(
+        "--outfile", help="FilePath for the output file", type=pathlib.Path
+    )
     return parser
 
 
@@ -89,38 +91,20 @@ def cluster_support():
 
 def get_dist(cost, t1, t2, t1_is_rooted, t2_is_rooted, **kwargs):
     dist = -1
-    if (not ("cli" in kwargs and kwargs["cli"])) or not (
-        check_strictly_binary(t1) and check_strictly_binary(t2)
-    ):
-        if t1_is_rooted and t2_is_rooted:
-            cost = "Rooted " + cost
-            if "Support" in cost:
-                dist = rooted_cluster_support(t1, t2) / calculate_rooted_phi(t1)
-            else:
-                dist = rooted_cluster_affinity(t1, t2) / calculate_rooted_tau(t1)
-        elif not t1_is_rooted:
-            cost = "Unrooted " + cost
-            if "Support" in cost:
-                raise RuntimeError("Unrooted Cluster Support is not supported")
-            else:
-                dist = unrooted_cluster_affinity(t1, t2) / calculate_unrooted_tau(t1)
+    if t1_is_rooted and t2_is_rooted:
+        cost = "Rooted " + cost
+        if "Support" in cost:
+            dist = rooted_cluster_support(t1, t2) / calculate_rooted_phi(t1)
         else:
-            raise RuntimeError("Rooted to unrooted comparisons are not supported")
+            dist = rooted_cluster_affinity(t1, t2) / calculate_rooted_tau(t1)
+    elif not t1_is_rooted:
+        cost = "Unrooted " + cost
+        if "Support" in cost:
+            raise RuntimeError("Unrooted Cluster Support is not supported")
+        else:
+            dist = unrooted_cluster_affinity(t1, t2) / calculate_unrooted_tau(t1)
     else:
-        if t1_is_rooted and t2_is_rooted:
-            cost = "Rooted " + cost
-            dist = compute_transfer_index(
-                t1, t2, cost=cost, annotate_cost=False
-            ) / calculate_rooted_tau(t1)
-        elif not t1_is_rooted:
-            cost = "Unrooted " + cost
-            if "Support" in cost:
-                raise RuntimeError("Unrooted Cluster Support is not supported")
-            dist = compute_transfer_index(
-                t1, t2, cost=cost, annotate_cost=False
-            ) / calculate_unrooted_tau(t1)
-        else:
-            raise RuntimeError("Rooted to unrooted comparisons are not supported")
+        raise RuntimeError("Rooted to unrooted comparisons are not supported")
     return dist
 
 
@@ -172,6 +156,14 @@ def cluster_cost_script(support=False):
         raise RuntimeError(
             "Tree {} and {} have different taxa set".format(args.t1, args.t2)
         )
+    color_tree(t1)
+    if args.outfile:
+        breakpoint()
+        tree_str = t1.write(parser=9, props=["name", "c_dist"])
+        tree_str = re.sub(r"&&NHX:", "&", tree_str)
+        nexus_file = "#NEXUS\n BEGIN TREES;\n Tree t1 = {}\n END;".format(tree_str)
+        with open(args.outfile, "w") as file:
+            file.write(nexus_file)
     if not args.cli:
         start_web_server(t1, t2, cost, args.color_only, args.t1.name, args.t2.name)
     else:
