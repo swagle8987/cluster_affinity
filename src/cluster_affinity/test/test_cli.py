@@ -47,6 +47,11 @@ class TestClusterScript:
         args = self.parser.parse_args("t1.tre t2.tre --filetype newick".split())
         assert args.filetype == "newick"
 
+    @pytest.mark.cli
+    def test_cluster_script_arguments_outfile(self):
+        args = self.parser.parse_args("t1.tre t2.tre --outfile test.tre".split())
+        assert args.outfile== Path("test.tre")
+
 
 class TestMatrixScript:
     parser = get_matrix_args()
