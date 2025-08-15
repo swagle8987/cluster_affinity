@@ -10,7 +10,7 @@ from ete4 import Tree, nexus
 from .reader import FileFormatError
 from pathlib import Path
 import numpy as np
-from .cli import get_dist
+from .cli import get_dist,check_input_trees
 
 import os
 
@@ -36,6 +36,7 @@ def get_matrix_args():
     )
     parser.add_argument("--csv_output",type=Path)
     parser.add_argument("--autoscale",help="Changes color scaling from 0-1 to min to max",action="store_true")
+    parser.add_argument("--percentage",help="Uses percentage of diameter",action="store_true")
     return parser
 
 def _get_trees(paths,ftype=None):
@@ -70,13 +71,20 @@ def cluster_matrix():
     else:
         cost = "Cluster Affinity"
     trees = _get_trees(args.t,args.filetype)
+    if not check_input_trees(list(trees.values())):
+        raise RuntimeError("The trees have incongruent taxa sets.")
     if args.average:
         matrix = np.zeros([len(trees)+1,len(trees)+1])
     else:
         matrix = np.zeros([len(trees),len(trees)])
     for i,t1 in enumerate(trees.values()):
         for j,t2 in enumerate(trees.values()):
-            matrix[i][j] = get_dist(cost,t1,t2,(not args.unrooted),(not args.unrooted))
+            dist = get_dist(cost,t1,t2,(not args.unrooted),(not args.unrooted))
+            if dist < 0:
+                raise RuntimeError("Invalid distance encountered. Maybe the trees have duplicate tips?")
+            elif dist > 1:
+                raise RuntimeError("Invalid distance encountered. Maybe the tree tips are incongruent?")
+            matrix[i][j] =  dist *(100 if args.percentage else 1)
     if args.average:
         xlabels = list(trees.keys()) + ["average"]
         matrix[-1] = np.average(matrix,axis=0)
@@ -94,7 +102,7 @@ def cluster_matrix():
         csv_matrix = np.hstack([np.array(["index"]+xlabels).reshape(len(csv_matrix),1),csv_matrix])
         np.savetxt(args.csv_output,csv_matrix,fmt="%s",delimiter=",")
     make_matrix_image(
-        matrix, args.outfile, xlabels=xlabels, ylabels=xlabels, cmap=cmap, vmin=0,vmax=1
+        matrix, args.outfile, xlabels=xlabels, ylabels=xlabels, cmap=cmap, vmin=vmin,vmax=vmax
     )
 
 def make_matrix_image(matrix, output_path, xlabels=[], ylabels=[], title="", cmap=None,vmin=0,vmax=1):

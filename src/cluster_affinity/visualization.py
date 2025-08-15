@@ -12,6 +12,14 @@ from .config import cmap,COLOR_RANGE
 from matplotlib.colors import rgb2hex, to_rgb
 
 
+def color_tree(t):
+    for node in t.traverse("postorder"):
+        if "c_dist" in node.props:
+            color = rgb2hex(cmap(node.props["c_dist"])[:3])
+        else:
+            color = rgb2hex(cmap(0)[:3])  ## The root and leaves have zero cost always
+        node.add_prop("!color",color)
+
 def generate_layout(cost, color_only):
 
     def draw_tree(tree):
@@ -31,24 +39,19 @@ def generate_layout(cost, color_only):
                 yield PropFace("name", fs_min=11, position="right")
             else:
                 yield PropFace("c_dist", fmt="%.3f", fs_min=11, position="right")
-        if "c_dist" in node.props:
-            color = rgb2hex(cmap(node.props["c_dist"])[:3])
-        else:
-            color = rgb2hex(cmap(0)[:3])  ## The root and leaves have zero cost always
         yield {
             "hz-line": {
-                "stroke": color,
+                "stroke": node.props["color"],
                 "stroke-width": max(1,node.props["c_dist"] * 5 if "c_dist" in node.props else 1),
             },
             "vt-line": {
-                "stroke": color,
+                "stroke": node.props["color"],
                 "stroke-width": max(1,node.props["c_dist"] * 5 if "c_dist" in node.props else 1),
                 
             },
         }
 
     return Layout(name=cost, draw_node=draw_node, draw_tree=draw_tree)
-
 
 def start_web_server(t1, t2, cost, color_only, t1_name, t2_name):
     layout = generate_layout(cost, color_only)
@@ -62,5 +65,8 @@ def start_web_server(t1, t2, cost, color_only, t1_name, t2_name):
         name="Target tree ({})".format(t2_name),
         layouts=[BASIC_LAYOUT],
     )
-    print("Press any key to stop the server and finish")
-    input()
+    print("Press 'q' to stop the server and finish")
+    key=input()
+    while key!="q":
+        key=input()
+    

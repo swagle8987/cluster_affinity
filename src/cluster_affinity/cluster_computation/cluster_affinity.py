@@ -39,24 +39,23 @@ def rooted_cluster_support(t1: ete4.Tree, t2: ete4.Tree) -> float:
 
 
 def unrooted_cluster_affinity(t1, t2):
-    t1_bipartitions = t1.edges()
+    t1_cmap = t1.get_cached_content(prop="name")
     t2_bipartitions = list(t2.edges())
     n = len(t1)
     tree_dist = 0
     with alive_bar(n) as bar:
-        for i in t1_bipartitions:
-            if len(i[1]) > 0 and len(i[1])<n:
+        for i in t1.traverse("postorder"):
+            if len(t1_cmap[i]) > 1 and len(t1_cmap[i])<n:
                 mindist = math.inf
                 for j in t2_bipartitions:
-                    if len(j[1])>0 and len(j[1])<n:
-                        c = set([l.name for l in i[1]])
-                        x = set([l.name for l in j[1]])
-                        cdx=len(c^x)
-                        cdist = min(cdx, n-cdx)
-                        if cdist<0:
-                            raise RuntimeError()
-                        if cdist < mindist:
-                            mindist = cdist
+                    x = set([l.name for l in j[1]])
+                    cdx = len(t1_cmap[i]^x)
+                    cdist = min(cdx, n- cdx)
+                    if cdist<0:
+                        raise RuntimeError()
+                    if cdist < mindist:
+                        mindist = cdist
+                i.add_prop("c_dist",mindist/max(1,min(len(t1_cmap[i])-1,n-len(t1_cmap[i]))))
                 tree_dist += mindist
     return tree_dist
 
