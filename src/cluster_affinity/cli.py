@@ -158,7 +158,6 @@ def cluster_cost_script(support=False):
         )
     color_tree(t1)
     if args.outfile:
-        breakpoint()
         tree_str = t1.write(parser=9, props=["name", "c_dist"])
         tree_str = re.sub(r"&&NHX:", "&", tree_str)
         nexus_file = "#NEXUS\n BEGIN TREES;\n Tree t1 = {}\n END;".format(tree_str)
