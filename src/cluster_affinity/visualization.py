@@ -41,11 +41,11 @@ def generate_layout(cost, color_only):
                 yield PropFace("c_dist", fmt="%.3f", fs_min=11, position="right")
         yield {
             "hz-line": {
-                "stroke": node.props["color"],
+                "stroke": node.props["!color"],
                 "stroke-width": max(1,node.props["c_dist"] * 5 if "c_dist" in node.props else 1),
             },
             "vt-line": {
-                "stroke": node.props["color"],
+                "stroke": node.props["!color"],
                 "stroke-width": max(1,node.props["c_dist"] * 5 if "c_dist" in node.props else 1),
                 
             },
