@@ -49,7 +49,7 @@ def get_tree(path, ftype=None):
         else:
             raise FileFormatError(
                 path,
-                "Could not match regex to data found in newick file;\n Is the data malformed?",
+                "Could not match regex to data found in newick file;\n Is the data malformed?\n Note taxa labels can only contain .,-,/",
             )
     elif ftype == "nexus":
         tdict = nexus.loads(data)
