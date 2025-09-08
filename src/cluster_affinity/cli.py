@@ -9,8 +9,6 @@ from .reader import get_tree
 from .cluster_computation import (
     calculate_rooted_phi,
     calculate_rooted_tau,
-    calculate_unrooted_phi,
-    calculate_unrooted_tau,
     rooted_cluster_affinity,
     rooted_cluster_support,
     unrooted_cluster_affinity,
@@ -102,7 +100,7 @@ def get_dist(cost, t1, t2, t1_is_rooted, t2_is_rooted, **kwargs):
         if "Support" in cost:
             raise RuntimeError("Unrooted Cluster Support is not supported")
         else:
-            dist = unrooted_cluster_affinity(t1, t2) / calculate_unrooted_tau(t1)
+            dist = unrooted_cluster_affinity(t1, t2)
     else:
         raise RuntimeError("Rooted to unrooted comparisons are not supported")
     return dist

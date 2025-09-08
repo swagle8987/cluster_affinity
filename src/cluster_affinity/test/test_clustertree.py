@@ -120,11 +120,8 @@ class TestClusterComputation:
             t2 = Tree()
             t2.populate(ntax, names=labels)
             dist = cluster_affinity.unrooted_cluster_affinity(t1, t2)
-            tau = cluster_affinity.calculate_unrooted_tau(t1)
             rdist = transfer_index.compute_transfer_index(
                 t1, t2, cost="Unrooted Cluster Affinity"
             )
             print(dist,rdist)
             assert dist == rdist, "{} {} {}".format(i,dist,rdist)
-            assert dist <= tau
-            assert rdist<=tau

@@ -139,25 +139,3 @@ def calculate_rooted_phi(t: ete4.Tree) -> float:
         sizemap[i.id] = s
         phi += min(s - 1, n - s) / s
     return phi
-
-
-def calculate_unrooted_tau(t):
-    tau = 0
-    n = len(t)
-    sizemap = dict()
-    flag = 0
-    for i in t.edges():
-        if len(i[0]) > 0 and len(i[0]) < n:
-            tau += min(len(i[0])-1,n-len(i[0])-1)
-    return tau
-
-
-def calculate_unrooted_phi(t):
-    phi = 0
-    n = len(t)
-    sizemap = dict()
-    flag = 0
-    for i in t.edges():
-        if len(i[0]) > 0 and len(i[0]) < n:
-            phi += min(len(i[0])-1,n-len(i[0])-1)/len(i[0])
-    return phi
