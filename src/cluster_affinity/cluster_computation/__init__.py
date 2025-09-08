@@ -1,6 +1,5 @@
 from .cluster_affinity import (
     calculate_rooted_tau,
-    calculate_unrooted_tau,
     calculate_rooted_phi,
     calculate_unrooted_phi,
     rooted_cluster_affinity,
