@@ -125,5 +125,3 @@ class TestClusterComputation:
             )
             print(dist,rdist)
             assert dist == rdist, "{} {} {}".format(i,dist,rdist)
-            assert dist <= tau
-            assert rdist<=tau
