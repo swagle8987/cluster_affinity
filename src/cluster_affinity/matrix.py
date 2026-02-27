@@ -89,6 +89,7 @@ def cluster_matrix():
         xlabels = list(trees.keys()) + ["average"]
         matrix[-1] = np.sum(matrix,axis=0)/(matrix.shape[0]-1)
         matrix[:,-1] = np.sum(matrix,axis=1)/(matrix.shape[1]-1)
+        matrix[-1,-1] = (np.sum(matrix[-1])+np.sum(matrix[:,-1]))/(matrix.shape[0]+matrix.shape[1]-2)
     else:
         xlabels = list(trees.keys())
     if args.autoscale:
