@@ -81,9 +81,9 @@ def cluster_matrix():
         for j,t2 in enumerate(trees.values()):
             dist = get_dist(cost,t1,t2,(not args.unrooted),(not args.unrooted))
             if dist < 0:
-                raise RuntimeError("Invalid distance encountered. Maybe the trees have duplicate tips?")
+                raise RuntimeError(f"Invalid distance: {dist} encountered. Maybe the trees have duplicate tips?")
             elif dist > 1:
-                raise RuntimeError("Invalid distance encountered. Maybe the tree tips are incongruent?")
+                raise RuntimeError(f"Invalid distance: {dist} encountered. Maybe the tree tips are incongruent?")
             matrix[i][j] =  dist *(100 if args.percentage else 1)
     if args.average:
         xlabels = list(trees.keys()) + ["average"]
