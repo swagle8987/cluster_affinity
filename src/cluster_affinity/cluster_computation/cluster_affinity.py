@@ -104,6 +104,8 @@ def rooted_cdist(c: cluster, t2: ete4.Tree) -> int:
                 intersection += intersection_lookup[ch.id]
         intersection_lookup[i.id] = intersection
         newdist = len(c) + len(t2lookup[i]) - 2 * intersection
+        if newdist < 0:
+            raise RuntimeError(f"Found negative distance {dist} for {c} and {i}")
         if mindist > newdist:
             mindist = newdist
     return mindist
